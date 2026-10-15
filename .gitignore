@@ -21,6 +21,7 @@
 /build
 
 # misc
+# .DS_Store em qualquer diretório
 .DS_Store
 *.pem
 
@@ -32,6 +33,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +41,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# mídia bruta: vídeos MP4 originais e downloads do SaveClip ficam fora do repositório
+public/images/**/*.mp4
+SaveClip.App_*
