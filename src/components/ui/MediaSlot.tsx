@@ -10,6 +10,8 @@ type MediaSlotProps = {
   preload?: boolean;
   tone?: "dark" | "light";
   className?: string;
+  /** Enquadramento da foto (ex.: `object-[80%_50%]`), sem distorcer a imagem. */
+  imageClassName?: string;
 };
 
 /**
@@ -25,11 +27,12 @@ export function MediaSlot({
   preload,
   tone = "dark",
   className = "",
+  imageClassName = "",
 }: MediaSlotProps) {
   if (src) {
     return (
       <div className={`relative overflow-hidden bg-stone ${className}`}>
-        <Image src={src} alt={alt} fill sizes={sizes} preload={preload} className="object-cover" />
+        <Image src={src} alt={alt} fill sizes={sizes} preload={preload} className={`object-cover ${imageClassName}`} />
       </div>
     );
   }

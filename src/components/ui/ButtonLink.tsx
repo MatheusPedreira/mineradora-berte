@@ -5,9 +5,9 @@ type Variant = "primary" | "outline" | "light" | "outline-light";
 
 const variants: Record<Variant, string> = {
   primary: "bg-navy text-offwhite hover:bg-navy-deep",
-  outline: "border border-ink/25 text-ink hover:border-ink hover:bg-ink hover:text-offwhite",
+  outline: "border border-ink/45 text-ink hover:border-ink hover:bg-ink hover:text-offwhite",
   light: "bg-offwhite text-graphite hover:bg-sand",
-  "outline-light": "border border-offwhite/35 text-offwhite hover:border-offwhite hover:bg-offwhite hover:text-graphite",
+  "outline-light": "border border-offwhite/55 text-offwhite hover:border-offwhite hover:bg-offwhite hover:text-graphite",
 };
 
 type ButtonLinkProps = {
@@ -19,7 +19,7 @@ type ButtonLinkProps = {
 };
 
 export function ButtonLink({ href, children, variant = "primary", icon = "arrow", className = "" }: ButtonLinkProps) {
-  const classes = `group inline-flex min-h-12 items-center justify-center gap-3 rounded-[2px] px-6 text-sm font-semibold tracking-wide transition-colors duration-300 ${variants[variant]} ${className}`;
+  const classes = `group inline-flex min-h-12 items-center whitespace-nowrap justify-center gap-3 rounded-[2px] px-6 text-sm font-semibold tracking-wide transition-colors duration-300 ${variants[variant]} ${className}`;
   const content = (
     <>
       {icon === "phone" ? <Phone aria-hidden="true" className="size-4" strokeWidth={1.75} /> : null}

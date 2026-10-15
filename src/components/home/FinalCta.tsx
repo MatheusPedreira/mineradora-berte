@@ -24,10 +24,11 @@ export function FinalCta() {
             id="cta-titulo"
             className="text-[2.3rem] leading-[1] font-bold tracking-[-0.035em] sm:text-6xl xl:text-[4.5rem]"
           >
-            Seu próximo projeto começa com o material certo.
+            Precisa de areia, brita ou agregados para a obra?
           </h2>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-offwhite/75 sm:text-lg">
-            Consulte a disponibilidade dos materiais e solicite um orçamento para sua obra.
+            Informe o material, a quantidade em tonelada ou m³ e se prefere entrega na obra ou retirada em Ponte
+            Serrada. Solicite seu orçamento ou ligue para a equipe comercial.
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <ButtonLink href={quoteHref} variant="light">

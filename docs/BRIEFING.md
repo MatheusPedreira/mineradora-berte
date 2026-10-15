@@ -10,7 +10,8 @@ Status: **Etapa 01** (base do projeto + Home). Ambiente de desenvolvimento, sem 
 | --- | --- | --- |
 | Nome | Mineradora Berté | `src/content/company.ts` |
 | Localização | 42M9+Q5 — Ponte Serrada, SC · CEP 89683-000 | `company.address` |
-| Telefone | (49) 98409-3337 | `company.phone` |
+| Telefone | (49) 98409-3337 (principal) | `company.phone` |
+| Telefone 2 | (49) 99180-1200 — exibido no rodapé e em /contato | `company.phoneSecondary` |
 | Comercialização | Por tonelada e por metro cúbico (m³) | `company.salesUnits` |
 | Fornecimento | Entrega e retirada pelo cliente | `company.supplyModes` |
 | Produtos (10) | Brita 1, Pedrisco, Areia industrial, Areia natural, Pó de brita, Brita 2, Bica corrida, Rachãozinho primário, Rachão mina, Rachão mataco | `src/content/products.ts` |
@@ -40,7 +41,7 @@ Status: **Etapa 01** (base do projeto + Home). Ambiente de desenvolvimento, sem 
 
 ## 3. Decisões de design
 
-- **Paleta ajustada à logo original.** Azul `#29375F` e cinza `#5B626D` foram amostrados da logo e substituem `#172B57`/`#565D67` como tokens `navy` e `basalt`. Mantidos: grafite `#151A22`, off-white `#F4F3EF`, areia `#C2B29B`. Adicionados `navy-deep` `#1B2541` (seções escuras) e `sand-deep` `#8A7A62` (detalhes sobre fundo claro). Tokens em `src/app/globals.css`.
+- **Paleta ajustada à logo original.** Azul `#29375F` e cinza `#5B626D` foram amostrados da logo e substituem `#172B57`/`#565D67` como tokens `navy` e `basalt`. Mantidos: grafite `#151A22`, off-white `#F4F3EF`, areia `#C2B29B`. Adicionados `navy-deep` `#1B2541` (seções escuras) e `sand-deep` `#736550` (detalhes sobre fundo claro; escurecido de `#8A7A62` em 15/10/2026 para atingir contraste AA). Tokens em `src/app/globals.css`.
 - **Logo**: lockup horizontal no header (símbolo + wordmark), montado a partir de recortes transparentes do PNG original — sem redesenhar. Versão clara (`-light`) para fundos escuros. Ícones (`src/app/icon.png`, `apple-icon.png`) gerados do símbolo.
 - **Tipografia**: Archivo (títulos, peso 700, tracking negativo) e Plus Jakarta Sans (textos), via `next/font`.
 - **Linguagem visual**: industrial e editorial — grid de 12 colunas, divisórias finas em vez de cards, numeração de seções (01–06), botões retos (raio de 2px), sem sombras nem gradientes decorativos.
@@ -121,3 +122,29 @@ Vídeos (ainda fora do site):
 - **Drone sobre a usina** (638×360, 27 s): resolução baixa demais para destaque; pedir o arquivo original do drone em 1080p/4K.
 
 Fotos ainda necessárias: caminhões da frota de entrega (a seção de logística fala em frota própria, mas as fotos atuais mostram equipamentos de pátio) e um close de cada um dos 10 produtos.
+
+## 8. Refinamento visual da Home (15/10/2026)
+
+Ajustes pontuais, sem redesign. Paleta, tipografia, estrutura editorial, fotos e SEO preservados.
+
+| Área | Antes | Depois |
+| --- | --- | --- |
+| H1 | "Areia, brita e agregados para construir com confiança." — 4 a 5 linhas no desktop, palavra órfã ("para") em 1024 e 1920 px | "Areia, brita e agregados para **sua obra**." — 3 linhas em 360, 390, 768, 1024, 1440 e 1920 px. Ponte Serrada segue no texto de apoio |
+| Botões do hero | "Conhecer produtos" como principal; quebra de texto nos botões em 1024 px | "Solicitar orçamento" como principal, "Conhecer produtos" secundário; botões não quebram linha |
+| Foto do hero | Escavadeira cortada em 1024 px | Enquadramento deslocado para a esquerda no desktop (`object-[28%_50%]`): escavadeira e caminhão visíveis em todos os breakpoints |
+| Cartões de produto | Áreas vazias com o símbolo da marca e "Foto do material"; no celular, ~2.000 px de cartões vazios empilhados | Painel tipográfico com número de catálogo (Brita 1 em grafite com dados de comercialização). No celular, 2 colunas: página ~1.200 px mais curta |
+| Estrutura × Qualidade | Duas aéreas com recorte central parecido | Logística enquadra pátio, caminhões e estrada (`object-[85%_50%]`); Qualidade enquadra correias e pilhas (`object-[30%_50%]`) |
+| Legibilidade | Rótulos de 9,6–11,2 px; descrições a 14 px com 65% de opacidade | Rótulos a 12 px (eyebrows, legendas), descrições a 15 px com 75% de opacidade sobre fundo escuro |
+| Botões secundários | Borda com contraste 1,7:1 | Borda com contraste ~2,8:1 (claro) e ~4,4:1 (escuro) |
+| CTA final | "Seu próximo projeto começa com o material certo." | "Precisa de areia, brita ou agregados para a obra?" + o que informar no pedido (material, quantidade em t ou m³, entrega ou retirada) |
+
+Fotos de produto: ao preencher `image.src` em `src/content/products.ts`, a foto ocupa exatamente a área do painel (mesma proporção), sem alterar o layout.
+
+### Decisões — aprovadas em 15/10/2026
+
+- [x] Novo H1 ("…para sua obra.") e novo título do CTA final.
+- [x] Inversão da hierarquia no hero (orçamento como botão principal).
+- [x] Painel numerado nos cartões de produto (Brita 1 em fundo grafite). Os números seguem a ordem do catálogo. Os cartões das páginas `/produtos` e `/produtos/[slug]` usam o mesmo componente e também mudaram.
+- [x] O novo texto do CTA final aparece também nas páginas internas (componente compartilhado).
+- [x] Acessibilidade: `sand-deep` escurecido de #8A7A62 (3,4–3,8:1) para #736550 (4,6–5,1:1 sobre off-white e pedra), mesmo matiz da areia.
+- [ ] "Lindóia" mantida sem alteração até confirmação do cliente (Lindóia do Sul?).

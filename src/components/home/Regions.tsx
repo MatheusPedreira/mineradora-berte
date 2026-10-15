@@ -20,7 +20,7 @@ export function Regions() {
           </h2>
 
           <div className="mt-10 border-l-2 border-navy pl-6">
-            <p className="flex items-center gap-2 text-[0.7rem] font-semibold tracking-eyebrow text-basalt uppercase">
+            <p className="flex items-center gap-2 text-xs font-semibold tracking-eyebrow text-basalt uppercase">
               <MapPin aria-hidden="true" className="size-3.5" strokeWidth={2} />
               Base de operação
             </p>
@@ -34,7 +34,7 @@ export function Regions() {
         </div>
 
         <div className="lg:col-span-6 lg:col-start-7">
-          <h3 className="text-[0.7rem] font-semibold tracking-eyebrow text-basalt uppercase">Cidades atendidas</h3>
+          <h3 className="text-xs font-semibold tracking-eyebrow text-basalt uppercase">Cidades atendidas</h3>
           <ul className="mt-5 grid border-t border-line sm:grid-cols-2 sm:gap-x-10">
             {served.map((city) => (
               <li key={city.name} className="flex items-center justify-between border-b border-line py-4">
@@ -44,7 +44,7 @@ export function Regions() {
             ))}
           </ul>
           <div className="mt-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <p className="max-w-xs text-sm leading-relaxed text-basalt">
+            <p className="max-w-sm text-[0.9375rem] leading-relaxed text-basalt">
               Outras localidades mediante consulta. Fale com a equipe para verificar o atendimento à sua obra.
             </p>
             <ButtonLink href="/regioes-atendidas" variant="outline">

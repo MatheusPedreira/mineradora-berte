@@ -26,7 +26,7 @@ function HeroMedia() {
         <source media="(min-width: 1024px)" srcSet={desktopSet} />
         <source srcSet={mobileSet} />
         {/* eslint-disable-next-line jsx-a11y/alt-text -- alt vem de getImageProps */}
-        <img {...rest} className="h-full w-full object-cover lg:absolute lg:inset-0" />
+        <img {...rest} className="h-full w-full object-cover lg:absolute lg:inset-0 lg:object-[28%_50%]" />
       </picture>
     );
   }
@@ -63,16 +63,16 @@ export function Hero() {
   return (
     <section aria-labelledby="hero-titulo" className="relative border-b border-line">
       <Container className="grid lg:min-h-[min(calc(100svh-5rem),900px)] lg:grid-cols-12">
-        <div className="flex flex-col justify-center pt-12 pb-12 sm:pt-16 lg:col-span-6 lg:py-20 lg:pr-12 xl:col-span-5">
-          <p className="animate-rise text-[0.7rem] font-semibold tracking-eyebrow text-basalt uppercase">
+        <div className="flex flex-col justify-center pt-10 pb-10 sm:pt-16 sm:pb-12 lg:col-span-6 lg:py-20 lg:pr-12 xl:col-span-5">
+          <p className="animate-rise text-[0.7rem] font-semibold tracking-eyebrow text-basalt uppercase sm:text-xs">
             Mineradora Berté <span className="px-1.5 text-sand-deep">·</span> Ponte Serrada / SC
           </p>
 
           <h1
             id="hero-titulo"
-            className="mt-6 animate-rise text-[2.55rem] leading-[0.98] font-bold tracking-[-0.035em] text-graphite [animation-delay:80ms] sm:text-6xl lg:text-[4.1rem] xl:text-[4.6rem] 2xl:text-[5.1rem]"
+            className="mt-6 max-w-[12ch] animate-rise text-[2.6rem] leading-[0.98] font-bold tracking-[-0.035em] text-graphite [animation-delay:80ms] sm:text-6xl lg:text-[4.1rem] xl:text-[4.6rem] 2xl:text-[5rem]"
           >
-            Areia, brita e agregados para construir com <span className="text-navy">confiança.</span>
+            Areia, brita e agregados para <span className="text-navy">sua obra.</span>
           </h1>
 
           <p className="mt-6 max-w-md animate-rise text-base leading-relaxed text-basalt [animation-delay:160ms] sm:text-lg">
@@ -81,9 +81,9 @@ export function Hero() {
           </p>
 
           <div className="mt-9 flex animate-rise flex-col gap-3 [animation-delay:240ms] sm:flex-row">
-            <ButtonLink href="/produtos">Conhecer produtos</ButtonLink>
-            <ButtonLink href={quoteHref} variant="outline" icon="none">
-              Solicitar orçamento
+            <ButtonLink href={quoteHref}>Solicitar orçamento</ButtonLink>
+            <ButtonLink href="/produtos" variant="outline" icon="none">
+              Conhecer produtos
             </ButtonLink>
           </div>
 
@@ -97,10 +97,10 @@ export function Hero() {
             </a>
           </p>
 
-          <dl className="mt-12 grid animate-rise grid-cols-3 border-t border-line [animation-delay:360ms]">
+          <dl className="mt-10 grid animate-rise sm:mt-12 grid-cols-3 border-t border-line [animation-delay:360ms]">
             {facts.map((fact, i) => (
               <div key={fact.label} className={`pt-4 ${i > 0 ? "border-l border-line pl-3 sm:pl-5" : "pr-3"}`}>
-                <dt className="text-[0.6rem] font-semibold tracking-[0.08em] text-basalt uppercase sm:text-[0.65rem] sm:tracking-eyebrow">
+                <dt className="text-[0.65rem] font-semibold tracking-[0.08em] text-basalt uppercase sm:tracking-eyebrow">
                   {fact.label}
                 </dt>
                 <dd className="mt-1.5 font-display text-sm leading-tight font-semibold text-graphite sm:text-base">

@@ -16,7 +16,7 @@ export function Differentials() {
           >
             O que sustenta cada fornecimento.
           </h2>
-          <p className="mt-5 max-w-sm text-sm leading-relaxed text-offwhite/65 sm:text-base">
+          <p className="mt-5 max-w-sm text-base leading-relaxed text-offwhite/75">
             Da rocha à entrega: material, padrão e logística sob o cuidado da própria Mineradora Berté.
           </p>
         </div>
@@ -39,7 +39,7 @@ export function Differentials() {
                 </span>
                 <div>
                   <h3 className="text-xl font-semibold tracking-[-0.01em] sm:text-2xl">{item.title}</h3>
-                  <p className="mt-3 max-w-xs text-sm leading-relaxed text-offwhite/65">{item.text}</p>
+                  <p className="mt-3 max-w-xs text-[0.9375rem] leading-relaxed text-offwhite/75">{item.text}</p>
                 </div>
               </div>
             </li>

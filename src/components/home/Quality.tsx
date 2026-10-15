@@ -45,6 +45,7 @@ export function Quality() {
             label="Fotografia real da produção"
             sizes="(min-width: 1024px) 45vw, 100vw"
             className="aspect-[4/3] lg:aspect-auto lg:h-full lg:min-h-[420px]"
+            imageClassName="object-[30%_50%]"
           />
 
           <div className="border border-ink/15 bg-offwhite p-6 sm:p-8">

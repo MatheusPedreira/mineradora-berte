@@ -15,6 +15,13 @@ export const company = {
     e164: "+55-49-98409-3337",
   },
 
+  /** Segundo telefone comercial (confirmado pelo cliente em 15/10/2026). */
+  phoneSecondary: {
+    display: "(49) 99180-1200",
+    href: "tel:+5549991801200",
+    e164: "+55-49-99180-1200",
+  },
+
   /** Uso do número como WhatsApp ainda não validado. Preencher apenas após confirmação. */
   whatsapp: null as string | null,
 

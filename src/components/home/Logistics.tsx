@@ -32,6 +32,7 @@ export function Logistics() {
             label="Fotografia real da operação"
             sizes="(min-width: 1024px) 55vw, 100vw"
             className="aspect-[4/3] lg:aspect-auto lg:h-full lg:min-h-[640px]"
+            imageClassName="object-[85%_50%]"
           />
         </div>
 
@@ -47,7 +48,7 @@ export function Logistics() {
           </h2>
 
           <div className="mt-10 border-t border-line-dark pt-8">
-            <h3 className="text-[0.7rem] font-semibold tracking-eyebrow text-sand uppercase">Frota própria</h3>
+            <h3 className="text-xs font-semibold tracking-eyebrow text-sand uppercase">Frota própria</h3>
             <ul className="mt-4 flex flex-wrap gap-2" aria-label="Configurações de caminhões">
               {fleet.map((item) => (
                 <li
@@ -64,7 +65,7 @@ export function Logistics() {
             {points.map((point) => (
               <div key={point.title} className="grid gap-1 border-t border-line-dark py-5 sm:grid-cols-[11rem_1fr] sm:gap-6">
                 <dt className="font-display text-base font-semibold">{point.title}</dt>
-                <dd className="text-sm leading-relaxed text-offwhite/65">{point.text}</dd>
+                <dd className="text-[0.9375rem] leading-relaxed text-offwhite/75">{point.text}</dd>
               </div>
             ))}
           </dl>

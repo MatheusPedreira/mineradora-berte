@@ -27,31 +27,31 @@ export function ProductsShowcase() {
           </p>
         </div>
 
-        <div className="mt-14 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:mt-20 lg:grid-cols-12 lg:grid-rows-2">
+        <div className="mt-12 grid grid-cols-2 gap-x-4 gap-y-8 sm:mt-14 sm:gap-x-6 sm:gap-y-10 lg:mt-20 lg:grid-cols-12 lg:grid-rows-2">
           {lead ? (
             <ProductTile
               product={lead}
               large
               sizes="(min-width: 1024px) 50vw, 100vw"
-              className="sm:col-span-2 lg:col-span-6 lg:row-span-2"
+              className="col-span-2 lg:col-span-6 lg:row-span-2"
             />
           ) : null}
           {rest.map((p) => (
-            <ProductTile key={p.slug} product={p} sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw" className="lg:col-span-3" />
+            <ProductTile key={p.slug} product={p} sizes="(min-width: 1024px) 25vw, 50vw" className="lg:col-span-3" />
           ))}
         </div>
 
         <div className="mt-16 grid gap-10 border-t border-line pt-10 lg:mt-20 lg:grid-cols-12">
           <div className="lg:col-span-3">
-            <h3 className="text-[0.7rem] font-semibold tracking-eyebrow text-basalt uppercase">
+            <h3 className="text-xs font-semibold tracking-eyebrow text-basalt uppercase">
               Catálogo completo · {products.length} materiais
             </h3>
           </div>
-          <div className="grid gap-8 sm:grid-cols-3 lg:col-span-6">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-6">
             {productCategories.map((cat) => (
               <div key={cat.id}>
                 <p className="font-display text-sm font-semibold text-graphite">{cat.name}</p>
-                <ul className="mt-3 space-y-2 text-sm">
+                <ul className="mt-3 space-y-2 text-[0.9375rem]">
                   {getProductsByCategory(cat.id).map((p) => (
                     <li key={p.slug}>
                       <Link href={`/produtos/${p.slug}`} className="link-underline text-basalt transition-colors hover:text-navy">

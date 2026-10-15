@@ -35,6 +35,12 @@ export default function ContactPage() {
               {company.phone.display}
             </a>
             <a
+              href={company.phoneSecondary.href}
+              className="mt-3 block font-display text-[2.1rem] leading-none font-bold tracking-[-0.02em] tabular-nums hover:text-sand sm:text-5xl"
+            >
+              {company.phoneSecondary.display}
+            </a>
+            <a
               href={company.phone.href}
               className="group mt-8 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-[2px] bg-offwhite px-6 text-sm font-semibold text-graphite transition-colors hover:bg-sand sm:w-auto"
             >
