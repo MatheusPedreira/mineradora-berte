@@ -7,21 +7,20 @@ type ProductTileProps = {
   product: Product;
   sizes: string;
   large?: boolean;
-  /** Mostra a chamada "Conhecer o material" ao lado da seta (catálogo). */
-  cta?: boolean;
   /** No desktop, a imagem ocupa a altura disponível da grade (destaque da Home). */
   fill?: boolean;
   className?: string;
 };
 
-export function ProductTile({ product, sizes, large, cta, fill, className = "" }: ProductTileProps) {
+/** Destaque de material (Home). Leva ao material no catálogo (/produtos#slug). */
+export function ProductTile({ product, sizes, large, fill, className = "" }: ProductTileProps) {
   const category = getCategory(product.category)?.name;
   const media = `h-full transition-transform duration-700 ease-out-quart group-hover:scale-[1.03] ${
     large ? `aspect-[4/3] sm:aspect-[16/9] ${fill ? "lg:aspect-auto lg:min-h-0" : ""}` : "aspect-[4/3]"
   }`;
 
   return (
-    <Link href={`/produtos/${product.slug}`} className={`group flex flex-col ${className}`}>
+    <Link href={`/produtos#${product.slug}`} className={`group flex flex-col ${className}`}>
       <div className="relative flex-1 overflow-hidden">
         <ProductMedia product={product} large={large} sizes={sizes} className={media} />
       </div>
@@ -39,7 +38,6 @@ export function ProductTile({ product, sizes, large, cta, fill, className = "" }
           </h3>
         </div>
         <span className="mb-1 flex shrink-0 items-center gap-1.5 text-basalt transition-colors group-hover:text-navy">
-          {cta ? <span className="hidden text-xs font-semibold sm:inline">Conhecer o material</span> : null}
           <ArrowUpRight
             aria-hidden="true"
             className="size-5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"

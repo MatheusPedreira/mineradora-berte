@@ -1,6 +1,6 @@
 # Mineradora Berté — Briefing do site
 
-Status: **Etapa 03** concluída (Home, catálogo, produtos e páginas institucionais). Domínio oficial em uso como ambiente de testes, `noindex`.
+Status: **Etapa 04** concluída (arquitetura comercial para Google Ads, catálogo único, formulário de orçamento). Domínio oficial em uso como ambiente de testes, `noindex`.
 
 ---
 
@@ -56,12 +56,12 @@ Status: **Etapa 03** concluída (Home, catálogo, produtos e páginas institucio
 | Rota | Conteúdo | Status |
 | --- | --- | --- |
 | `/` | Hero, Diferenciais, Produtos, Estrutura e Logística, Qualidade, Regiões, FAQ, CTA final | Completa (aguarda fotos) |
-| `/produtos` | Hero, índice visual (10 materiais + atalhos por categoria), catálogo em 3 seções | Concluída (Etapa 02) |
-| `/produtos/[slug]` | 10 páginas estáticas: hero, sobre o material, fornecimento, ficha técnica (quando houver), outros materiais, CTA com produto | Concluída (Etapa 02), aguarda fotos e dados técnicos |
+| `/produtos` | Hero, índice visual, catálogo único em 3 categorias; cada material com descrição e "Solicitar orçamento" com o produto pré-selecionado | Concluída (Etapas 02 e 04) |
+| `/produtos/<slug>` | **Removidas na Etapa 04.** Redirecionamento permanente (308) para `/produtos#<slug>` | Redirecionadas |
 | `/estrutura-e-logistica` | Hero escuro com foto da usina, estrutura operacional (3 fotos), frota própria, entrega/retirada, atendimento regional, CTA | Concluída (Etapa 03), aguarda fotos da frota |
 | `/sobre` | Hero com título recortado sobre a foto, apresentação, operação, 5 diferenciais, próximos passos, CTA | Concluída (Etapa 03), aguarda história da empresa |
 | `/regioes-atendidas` | Hero tipográfico + base de operação, operação, índice de cidades, outras localidades, entrega/retirada, CTA | Concluída (Etapa 03), aguarda confirmação de Lindóia |
-| `/contato` | Telefone, localização, Google Maps, roteiro do pedido | Básica |
+| `/contato` | Formulário de orçamento (campos condicionais), telefones, localização | Interface pronta; envio aguarda canal confirmado |
 | `/politica-de-privacidade` | Texto base (LGPD) | Revisar |
 
 Slugs: `brita-1`, `pedrisco`, `areia-industrial`, `areia-natural`, `po-de-brita`, `brita-2`, `bica-corrida`, `rachaozinho-primario`, `rachao-mina`, `rachao-mataco`.
@@ -242,4 +242,81 @@ Localização (42M9+Q5, Ponte Serrada, CEP 89683-000), os dois telefones, tonela
 - Fotos originais em maior resolução (≥ 2400 px) e vídeo original do drone.
 - Validar os textos institucionais (operação, diferenciais, legendas das fotos).
 - Confirmar se todas as etapas (lavra, britagem, estocagem) ocorrem no mesmo local em Ponte Serrada e a origem da areia natural.
+
+## 11. Etapa 04 — Estratégia comercial e formulário de orçamento (15/10/2026)
+
+### Estratégia de Google Ads (configurada fora do site)
+
+- Uma campanha de Pesquisa com dois grupos: **Brita** e **Areia**.
+- Os dois grupos usam a mesma URL final: **https://www.mineradoraberte.com.br/** (a Home). Sem landing pages por produto.
+- Nenhuma campanha, credencial ou ID de rastreamento está no código.
+
+### Arquitetura comercial
+
+```
+Anúncio (Brita / Areia) → Home → "Solicitar orçamento" → /contato (formulário)
+                                → Catálogo (/produtos) → "Solicitar orçamento" do material → /contato?produto=<slug>
+                                → Telefone (header, hero, CTA final, rodapé, barra no celular)
+```
+
+- **Todos os botões "Solicitar orçamento"** (header, menu mobile, hero, seções institucionais, CTA final, rodapé, barra do celular) levam a `/contato`, sem exigir a escolha de um produto.
+- **No catálogo**, cada material leva a `/contato?produto=<slug>`, que abre o formulário com o material pré-selecionado. Parâmetros inválidos são ignorados.
+
+### Catálogo
+
+- As 10 páginas individuais foram removidas. A base de dados (`src/content/products.ts`) foi mantida e alimenta o catálogo, a Home, o rodapé e o formulário.
+- `/produtos/<slug>` → **308** para `/produtos#<slug>` (o card do material tem `id` = slug). Slugs inexistentes retornam 404. Regras em `next.config.ts`; o `src/proxy.ts` deixou de ser necessário.
+- Componentes removidos por terem ficado sem uso: `src/components/product/*` e os helpers `getRelatedProducts` e `productNameInline`.
+- Card do catálogo (`CatalogItem`): miniatura numerada (foto quando houver), categoria, nome, descrição (oficial, se houver; senão o texto geral) e "Solicitar orçamento". No celular, formato de lista; a partir de 640px, cards.
+- Home e rodapé apontam para `/produtos#<slug>`. Sitemap sem as URLs antigas.
+
+### Home como destino dos anúncios (auditoria)
+
+| Critério | Situação |
+| --- | --- |
+| Vende areia e brita | H1 aprovado "Areia, brita e agregados para sua obra." mantido |
+| Ponte Serrada, SC | Linha acima do H1 + seção de regiões |
+| Estrutura da mineradora | Foto real no hero + seções de logística e qualidade |
+| Entrega e retirada | Faixa de dados do hero + seção de logística + FAQ |
+| Orçamento | Botão "Solicitar orçamento" visível sem rolar em 360×640, 390×844 e desktop |
+
+Ajuste de conversão: abaixo de 640px o header não tem botão de orçamento; foi adicionada uma **barra fixa no celular** (Solicitar orçamento + telefone) que aparece após rolar a página e não aparece em /contato. Nenhuma outra mudança visual na Home.
+
+### Formulário (`src/components/quote/QuoteForm.tsx`, regras em `src/content/quote.ts`)
+
+1. Material (10 materiais agrupados por categoria), quantidade, unidade (toneladas ou m³).
+2. Modalidade: **entrega** → cidade (lista de cidades atendidas + "Outra cidade") e endereço/referência (opcional); **retirada** → aviso com a localização da mineradora.
+3. Nome, telefone (máscara (49) 99999-9999), observações (opcional).
+
+- Um único formulário para todos os materiais. Resumo do pedido montado em tempo real.
+- **Canal de envio:** nenhum confirmado. `company.whatsapp = null` e `company.quoteEndpoint = null`, portanto **não existe botão de envio**: o formulário termina com "Finalize o pedido por telefone" e os dois números clicáveis.
+- **Quando o WhatsApp comercial for confirmado:** preencher `company.whatsapp` (ex.: `"+55 49 9XXXX-XXXX"`). Aparece o botão "Revisar e enviar pelo WhatsApp", com validação dos campos, que abre o WhatsApp com a mensagem estruturada para o cliente revisar e enviar. Fluxo testado localmente com número fictício (não publicado).
+- Envio direto (e-mail/CRM) exigirá backend; não implementado sem canal definido.
+
+### Telefones
+
+- Principal: **(49) 98409-3337** (`company.phone`) — header, hero, CTAs, barra do celular, JSON-LD.
+- Secundário: **(49) 99180-1200** (`company.phoneSecondary`) — rodapé, /contato, final do formulário, /regioes-atendidas.
+- Nenhum número é tratado como WhatsApp.
+
+### Analytics (`src/lib/analytics.ts`)
+
+Eventos enviados para `window.dataLayer` **somente se** uma tag (GTM/GA4/Google Ads) for instalada; sem a tag, nada é registrado.
+
+| Evento | Quando |
+| --- | --- |
+| `phone_click` | Clique em qualquer link `tel:` (com número e página) |
+| `whatsapp_click` | Clique em link do WhatsApp (só existirá após confirmação) |
+| `quote_form_start` | Primeira interação com o formulário |
+| `quote_whatsapp_open` | Formulário válido abriu o WhatsApp — **não é venda nem pedido recebido** |
+| `quote_submitted` | Reservado: usar apenas com confirmação real de recebimento (backend) |
+
+Para medir no Google Ads: instalar a tag (com ID real fornecido pelo cliente), criar conversões a partir desses eventos e atualizar a Política de Privacidade.
+
+### Pendências
+
+- Confirmar qual número tem WhatsApp comercial (se houver).
+- Definir canal de recebimento do formulário (WhatsApp, e-mail ou CRM).
+- Conta do Google Ads / GTM para instalação da tag e definição das conversões.
+- Atualizar a Política de Privacidade ao ativar formulário e medição.
 

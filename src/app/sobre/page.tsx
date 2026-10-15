@@ -22,9 +22,9 @@ const pad = (n: number) => String(n).padStart(2, "0");
 const materials = [
   { label: "Britas", href: "/produtos#britas" },
   { label: "Areias", href: "/produtos#areias" },
-  { label: "Pedrisco", href: "/produtos/pedrisco" },
-  { label: "Pó de brita", href: "/produtos/po-de-brita" },
-  { label: "Bica corrida", href: "/produtos/bica-corrida" },
+  { label: "Pedrisco", href: "/produtos#pedrisco" },
+  { label: "Pó de brita", href: "/produtos#po-de-brita" },
+  { label: "Bica corrida", href: "/produtos#bica-corrida" },
   { label: "Rachões", href: "/produtos#rachoes" },
 ];
 

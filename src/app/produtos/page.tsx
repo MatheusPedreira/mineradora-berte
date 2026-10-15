@@ -2,7 +2,7 @@ import { ArrowDown } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { ProductTile } from "@/components/ui/ProductTile";
+import { CatalogItem } from "@/components/ui/CatalogItem";
 import { FinalCta } from "@/components/home/FinalCta";
 import { getProductsByCategory, productCategories, products } from "@/content/products";
 import { pageMetadata } from "@/lib/site";
@@ -101,17 +101,16 @@ export default function ProductsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 lg:col-span-8">
+              <div className="grid gap-6 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-12 lg:col-span-8">
                 {items.map((p, j) => {
                   const large = leadFirst && j === 0;
                   return (
-                    <ProductTile
+                    <CatalogItem
                       key={p.slug}
                       product={p}
-                      cta
                       large={large}
-                      sizes={large ? "(min-width: 1024px) 60vw, 100vw" : "(min-width: 1024px) 30vw, 50vw"}
-                      className={large ? "col-span-2" : ""}
+                      sizes={large ? "(min-width: 1024px) 60vw, (min-width: 640px) 100vw, 104px" : "(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 104px"}
+                      className={large ? "sm:col-span-2" : ""}
                     />
                   );
                 })}

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { company } from "@/content/company";
-import { mainNav } from "@/content/navigation";
+import { mainNav, quoteHref } from "@/content/navigation";
 import { products } from "@/content/products";
 
 const linkClass = "link-underline text-offwhite/70 transition-colors hover:text-offwhite";
@@ -11,7 +12,7 @@ const linkClass = "link-underline text-offwhite/70 transition-colors hover:text-
 export function SiteFooter() {
   return (
     <footer className="on-dark bg-graphite text-offwhite">
-      <Container className="pt-16 pb-10 sm:pt-20">
+      <Container className="pt-16 pb-28 sm:pt-20 sm:pb-10">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-4">
             <Logo tone="light" />
@@ -19,6 +20,9 @@ export function SiteFooter() {
               Mineração e fornecimento de areia, brita e agregados para construção civil em {company.address.city},{" "}
               {company.address.stateName}. Venda por tonelada ou m³, com entrega ou retirada.
             </p>
+            <ButtonLink href={quoteHref} variant="light" className="mt-8">
+              Solicitar orçamento
+            </ButtonLink>
           </div>
 
           <nav aria-label="Navegação do rodapé" className="lg:col-span-2">
@@ -44,7 +48,7 @@ export function SiteFooter() {
             <ul className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 text-sm lg:grid-cols-1">
               {products.map((p) => (
                 <li key={p.slug}>
-                  <Link href={`/produtos/${p.slug}`} className={linkClass}>
+                  <Link href={`/produtos#${p.slug}`} className={linkClass}>
                     {p.name}
                   </Link>
                 </li>

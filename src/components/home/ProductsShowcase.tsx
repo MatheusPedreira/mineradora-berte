@@ -55,7 +55,7 @@ export function ProductsShowcase() {
                 <ul className="mt-3 space-y-2 text-[0.9375rem]">
                   {getProductsByCategory(cat.id).map((p) => (
                     <li key={p.slug}>
-                      <Link href={`/produtos/${p.slug}`} className="link-underline text-basalt transition-colors hover:text-navy">
+                      <Link href={`/produtos#${p.slug}`} className="link-underline text-basalt transition-colors hover:text-navy">
                         {p.name}
                       </Link>
                     </li>

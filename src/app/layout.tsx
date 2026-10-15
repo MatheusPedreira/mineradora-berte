@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Archivo, Plus_Jakarta_Sans } from "next/font/google";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { MobileQuoteBar } from "@/components/layout/MobileQuoteBar";
+import { ConversionTracking } from "@/components/layout/ConversionTracking";
 import { JsonLd, localBusinessSchema } from "@/components/seo/JsonLd";
 import { company } from "@/content/company";
 import { isIndexable, siteUrl } from "@/lib/site";
@@ -56,6 +58,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </main>
         <SiteFooter />
+        <MobileQuoteBar />
+        <ConversionTracking />
         <JsonLd data={localBusinessSchema()} />
       </body>
     </html>

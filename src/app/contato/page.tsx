@@ -1,113 +1,100 @@
 import { Suspense } from "react";
 import { ArrowUpRight, Phone } from "lucide-react";
-import { QuoteProductNote } from "@/components/product/QuoteProductNote";
+import { QuoteForm } from "@/components/quote/QuoteForm";
 import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { company } from "@/content/company";
-import { quoteFields } from "@/content/quote";
+import { getProduct } from "@/content/products";
 import { pageMetadata } from "@/lib/site";
 
 export const metadata = pageMetadata({
   title: "Contato e Orçamento",
   description:
-    "Solicite orçamento de areia, brita e agregados com a Mineradora Berté, em Ponte Serrada (SC). Ligue (49) 98409-3337.",
+    "Solicite orçamento de areia, brita e agregados com a Mineradora Berté, em Ponte Serrada (SC). Informe material, quantidade e entrega ou retirada, ou ligue (49) 98409-3337.",
   path: "/contato",
 });
+
+/**
+ * Formulário com o material pré-selecionado (/contato?produto=<slug>).
+ * O parâmetro só é aceito se corresponder a um material do catálogo.
+ */
+async function QuoteFormWithProduct({ searchParams }: Pick<PageProps<"/contato">, "searchParams">) {
+  const { produto } = await searchParams;
+  const product = typeof produto === "string" ? getProduct(produto) : undefined;
+  return <QuoteForm initialProduct={product?.slug} />;
+}
 
 export default function ContactPage({ searchParams }: PageProps<"/contato">) {
   return (
     <>
       <PageHeader
-        eyebrow="Contato"
+        eyebrow="Orçamento"
         title="Solicite seu orçamento."
-        lead="Fale diretamente com a equipe comercial da Mineradora Berté pelo telefone."
+        lead="Informe o material, a quantidade e se prefere entrega na obra ou retirada na mineradora. A equipe comercial informa as condições."
         crumbs={[{ name: "Contato", path: "/contato" }]}
       />
 
-      <Container className="grid gap-12 py-16 sm:py-20 lg:grid-cols-12 lg:gap-8 lg:py-24">
-        <div className="lg:col-span-5">
-          <section aria-labelledby="telefone" className="on-dark bg-navy p-8 text-offwhite sm:p-10">
-            <h2 id="telefone" className="text-[0.7rem] font-semibold tracking-eyebrow text-sand uppercase">
-              Telefone comercial
-            </h2>
-            <a
-              href={company.phone.href}
-              className="mt-4 block font-display text-[2.1rem] leading-none font-bold tracking-[-0.02em] tabular-nums hover:text-sand sm:text-5xl"
-            >
-              {company.phone.display}
-            </a>
-            <a
-              href={company.phoneSecondary.href}
-              className="mt-3 block font-display text-[2.1rem] leading-none font-bold tracking-[-0.02em] tabular-nums hover:text-sand sm:text-5xl"
-            >
-              {company.phoneSecondary.display}
-            </a>
-            <a
-              href={company.phone.href}
-              className="group mt-8 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-[2px] bg-offwhite px-6 text-sm font-semibold text-graphite transition-colors hover:bg-sand sm:w-auto"
-            >
-              <Phone aria-hidden="true" className="size-4" strokeWidth={1.75} />
-              Ligar agora
-            </a>
-          </section>
-
-          <section aria-labelledby="localizacao" className="mt-10 border-t border-line pt-8">
-            <h2 id="localizacao" className="text-[0.7rem] font-semibold tracking-eyebrow text-basalt uppercase">
-              Localização
-            </h2>
-            <address className="mt-4 text-base leading-relaxed text-graphite not-italic">
-              <span className="font-display text-xl font-semibold">{company.name}</span>
-              <br />
-              {company.address.plusCode} — {company.address.city}, {company.address.state}
-              <br />
-              CEP {company.address.postalCode}
-            </address>
-            <a
-              href={company.mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-navy hover:underline"
-            >
-              Abrir no Google Maps
-              <ArrowUpRight aria-hidden="true" className="size-4" strokeWidth={1.75} />
-              <span className="sr-only">(abre em nova aba)</span>
-            </a>
-          </section>
-        </div>
-
-        {/*
-          Espaço do formulário de cotação. O formulário só deve ser ativado quando
-          company.quoteEndpoint estiver configurado (canal de recebimento confirmado).
-          Até lá, os campos servem como roteiro para o contato telefônico.
-        */}
-        <section aria-labelledby="cotacao" className="border border-line bg-stone/60 p-8 sm:p-10 lg:col-span-6 lg:col-start-7">
-          <h2 id="cotacao" className="text-3xl font-bold tracking-[-0.025em] text-graphite sm:text-4xl">
-            O que informar no pedido
+      <Container className="grid gap-14 py-12 sm:py-16 lg:grid-cols-12 lg:gap-8 lg:py-24">
+        <section aria-labelledby="orcamento-titulo" id="orcamento" className="scroll-mt-28 lg:col-span-7">
+          <h2 id="orcamento-titulo" className="sr-only">
+            Formulário de orçamento
           </h2>
-          <p className="mt-4 max-w-md text-base leading-relaxed text-basalt">
-            Para agilizar o orçamento, tenha em mãos as informações abaixo ao ligar.
-          </p>
-          <Suspense fallback={null}>
-            <QuoteProductNote searchParams={searchParams} />
+          <Suspense fallback={<QuoteForm />}>
+            <QuoteFormWithProduct searchParams={searchParams} />
           </Suspense>
-          <ol className="mt-8 border-t border-ink/15">
-            {quoteFields.map((field, i) => (
-              <li key={field.name} className="flex items-baseline gap-5 border-b border-ink/15 py-4">
-                <span className="font-display text-xs font-semibold text-sand-deep tabular-nums">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="flex flex-1 flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                  <span className="font-display text-base font-semibold text-graphite">{field.label}</span>
-                  {field.options ? <span className="text-sm text-basalt">{field.options.join(" ou ")}</span> : null}
-                </span>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-6 text-xs leading-relaxed text-basalt">
-            O envio de pedidos pelo site será disponibilizado em breve. No momento, o atendimento é feito pelo telefone{" "}
-            {company.phone.display}.
-          </p>
         </section>
+
+        <aside className="lg:col-span-4 lg:col-start-9">
+          <div className="lg:sticky lg:top-28">
+            <section aria-labelledby="telefone" className="on-dark bg-navy p-8 text-offwhite sm:p-10">
+              <h2 id="telefone" className="text-[0.7rem] font-semibold tracking-eyebrow text-sand uppercase">
+                Telefones comerciais
+              </h2>
+              <a
+                href={company.phone.href}
+                className="mt-4 block font-display text-[2rem] leading-none font-bold tracking-[-0.02em] tabular-nums hover:text-sand sm:text-4xl"
+              >
+                {company.phone.display}
+              </a>
+              <a
+                href={company.phoneSecondary.href}
+                className="mt-3 block font-display text-[2rem] leading-none font-bold tracking-[-0.02em] tabular-nums hover:text-sand sm:text-4xl"
+              >
+                {company.phoneSecondary.display}
+              </a>
+              <a
+                href={company.phone.href}
+                className="group mt-8 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-[2px] bg-offwhite px-6 text-sm font-semibold text-graphite transition-colors hover:bg-sand"
+              >
+                <Phone aria-hidden="true" className="size-4" strokeWidth={1.75} />
+                Ligar agora
+              </a>
+            </section>
+
+            <section aria-labelledby="localizacao" className="mt-10 border-t border-line pt-8">
+              <h2 id="localizacao" className="text-[0.7rem] font-semibold tracking-eyebrow text-basalt uppercase">
+                Localização
+              </h2>
+              <address className="mt-4 text-base leading-relaxed text-graphite not-italic">
+                <span className="font-display text-xl font-semibold">{company.name}</span>
+                <br />
+                {company.address.plusCode} — {company.address.city}, {company.address.state}
+                <br />
+                CEP {company.address.postalCode}
+              </address>
+              <a
+                href={company.mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-navy hover:underline"
+              >
+                Abrir no Google Maps
+                <ArrowUpRight aria-hidden="true" className="size-4" strokeWidth={1.75} />
+                <span className="sr-only">(abre em nova aba)</span>
+              </a>
+            </section>
+          </div>
+        </aside>
       </Container>
     </>
   );

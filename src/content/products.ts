@@ -21,8 +21,8 @@ export type ProductImage = {
 };
 
 /**
- * Ficha técnica confirmada pela empresa. Todos os campos são opcionais e
- * só aparecem na página quando preenchidos.
+ * Ficha técnica confirmada pela empresa. Todos os campos são opcionais; ficam
+ * registrados aqui para uso futuro no catálogo, quando confirmados.
  */
 export type ProductTechnical = {
   granulometry?: string;
@@ -38,14 +38,14 @@ export type Product = {
   name: string;
   category: ProductCategory["id"];
   image: ProductImage;
-  /** Frase comercial curta, baseada apenas em dados confirmados (hero e meta description). */
+  /** Frase comercial curta, baseada apenas em dados confirmados. */
   summary: string;
   /**
    * Explicação geral do tipo de material (nomenclatura de mercado), sem especificações
    * próprias da Berté. `null` quando não há informação geral segura para publicar.
    */
   about: string[] | null;
-  /** Descrição oficial enviada pela empresa. Quando existir, aparece antes do texto geral. */
+  /** Descrição oficial enviada pela empresa. Quando existir, substitui o texto geral no catálogo. */
   description: string | null;
   technical: ProductTechnical;
   featured?: boolean;
@@ -200,25 +200,7 @@ export function productIndex(product: Product) {
   return String(products.findIndex((p) => p.slug === product.slug) + 1).padStart(2, "0");
 }
 
-/**
- * Outros materiais: primeiro os da mesma categoria, depois os seguintes no catálogo.
- * Agrupamento apenas por família, sem sugerir relação técnica entre materiais.
- */
-export function getRelatedProducts(product: Product, limit = 3) {
-  const same = products.filter((p) => p.category === product.category && p.slug !== product.slug);
-  const start = products.findIndex((p) => p.slug === product.slug);
-  const rest = [...products.slice(start + 1), ...products.slice(0, start)].filter(
-    (p) => p.category !== product.category,
-  );
-  return [...same, ...rest].slice(0, limit);
-}
-
-/** Nome em minúsculas, sem quebrar a linha antes de números ("brita 1"). Uso em frases. */
-export function productNameInline(product: Product) {
-  return product.name.toLowerCase().replace(/ (\d)/g, "\u00a0$1");
-}
-
-/** Link de orçamento com o material identificado (validado em /contato). */
+/** Link de orçamento com o material pré-selecionado no formulário (validado em /contato). */
 export function quoteHrefFor(product: Product) {
   return `/contato?produto=${product.slug}`;
 }
