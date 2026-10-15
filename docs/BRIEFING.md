@@ -1,6 +1,6 @@
 # Mineradora Berté — Briefing do site
 
-Status: **Etapa 01** (base do projeto + Home). Ambiente de desenvolvimento, sem domínio, `noindex`.
+Status: **Etapa 03** concluída (Home, catálogo, produtos e páginas institucionais). Domínio oficial em uso como ambiente de testes, `noindex`.
 
 ---
 
@@ -58,9 +58,9 @@ Status: **Etapa 01** (base do projeto + Home). Ambiente de desenvolvimento, sem 
 | `/` | Hero, Diferenciais, Produtos, Estrutura e Logística, Qualidade, Regiões, FAQ, CTA final | Completa (aguarda fotos) |
 | `/produtos` | Hero, índice visual (10 materiais + atalhos por categoria), catálogo em 3 seções | Concluída (Etapa 02) |
 | `/produtos/[slug]` | 10 páginas estáticas: hero, sobre o material, fornecimento, ficha técnica (quando houver), outros materiais, CTA com produto | Concluída (Etapa 02), aguarda fotos e dados técnicos |
-| `/estrutura-e-logistica` | Frota e modalidades de fornecimento | Básica |
-| `/sobre` | Apresentação com dados confirmados + diferenciais | Básica |
-| `/regioes-atendidas` | Base de operação + cidades | Básica |
+| `/estrutura-e-logistica` | Hero escuro com foto da usina, estrutura operacional (3 fotos), frota própria, entrega/retirada, atendimento regional, CTA | Concluída (Etapa 03), aguarda fotos da frota |
+| `/sobre` | Hero com título recortado sobre a foto, apresentação, operação, 5 diferenciais, próximos passos, CTA | Concluída (Etapa 03), aguarda história da empresa |
+| `/regioes-atendidas` | Hero tipográfico + base de operação, operação, índice de cidades, outras localidades, entrega/retirada, CTA | Concluída (Etapa 03), aguarda confirmação de Lindóia |
 | `/contato` | Telefone, localização, Google Maps, roteiro do pedido | Básica |
 | `/politica-de-privacidade` | Texto base (LGPD) | Revisar |
 
@@ -197,3 +197,49 @@ Fotos de produto: ao preencher `image.src` em `src/content/products.ts`, a foto 
 - [ ] Origem de cada material (ex.: se a areia natural é extraída pela própria Berté ou adquirida).
 - [ ] Validar os textos gerais de "O que é …?".
 - [ ] Validar o agrupamento em 3 categorias.
+
+## 10. Etapa 03 — Páginas institucionais (15/10/2026)
+
+As três páginas usam o mesmo design system (tokens, Archivo/Jakarta, grid de 12 colunas, divisórias finas, numeração), mas cada uma tem composição própria. As seções de cada página ficam no próprio `page.tsx`, como em `/produtos`.
+
+### Páginas
+
+| Página | Composição | Fundo das seções |
+| --- | --- | --- |
+| `/sobre` | Hero: foto ampla com o H1 em um painel recortado sobre o canto inferior (no celular, título antes da foto) · 01 A empresa: frase editorial + famílias de materiais com links (não é catálogo) · 02 Nossa operação: foto panorâmica + 4 etapas em linha · 03 Diferenciais: tabela com numeração vazada (5 itens) · links "Conhecer produtos" / "Estrutura e logística" · CTA final | claro → claro → grafite → claro → pedra → azul |
+| `/estrutura-e-logistica` | Hero escuro: H1 grande, CTA e foto panorâmica da usina com faixa de dados (frota, fornecimento, comercialização, base) · 01 Estrutura operacional: mosaico assimétrico com legendas numeradas · 02 Frota própria: composição tipográfica das 4 configurações · 03 Entrega × Retirada lado a lado + faixa tonelada/m³ · 04 Atendimento regional · CTA "Precisa organizar o fornecimento…" | grafite → claro → azul profundo → claro → claro → azul |
+| `/regioes-atendidas` | Hero tipográfico ("De Ponte Serrada para sua região.") com faixa base/localização/link do Google Maps · 01 A operação: foto sangrando até a borda + texto · 02 Índice de cidades (Ponte Serrada em destaque como base; demais numeradas) + bloco "Sua obra fica em outra cidade?" com os dois telefones · 03 Entrega ou retirada · CTA "Consulte o fornecimento para a sua cidade." | claro → claro → grafite → claro → azul |
+
+### Fotografias utilizadas (nenhum arquivo novo, nenhuma recompressão)
+
+| Arquivo | Onde |
+| --- | --- |
+| `institutional/vista-aerea-operacao.jpg` | Hero de /sobre |
+| `operations/usina-britagem.jpg` | /sobre (Nossa operação) e mosaico de /estrutura-e-logistica (Usina de britagem) |
+| `operations/usina-vista-superior.jpg` | Hero de /estrutura-e-logistica |
+| `hero/pedreira-basalto.jpg` | Mosaico de /estrutura-e-logistica (Frente de lavra) |
+| `operations/vista-aerea-patio.jpg` | Mosaico de /estrutura-e-logistica (Pátio e estocagem) e /regioes-atendidas (A operação) |
+
+O 6º original (`…472900061…`) é quase idêntico a `vista-aerea-patio.jpg` e segue só como imagem de Open Graph. As fotos têm 1440 px de largura: em telas de 1920 px a imagem panorâmica é levemente ampliada — pedir originais em resolução maior.
+
+### Dados usados (somente confirmados)
+
+Localização (42M9+Q5, Ponte Serrada, CEP 89683-000), os dois telefones, tonelada/m³, entrega/retirada, frota (truck, 6x4, bitruck, carretas), diferenciais e as 10 cidades. Nada de anos de mercado, capacidade, quantidade de caminhões, capacidade de carga, prazos, distâncias, rotas ou história. Lindóia continua com o nome informado (sem converter para Lindóia do Sul) e fora do JSON-LD.
+
+### Decisões de design
+
+- **Frota sem foto**: composição tipográfica. A foto aparece automaticamente quando `media.fleet.src` for preenchido (sem área vazia "em breve" no site publicado).
+- **Mapa**: mantido o link externo do Google Maps (`company.mapsUrl`); nenhum mapa incorporado, para não carregar serviço externo.
+- **Sem páginas por cidade** e sem filiais: o SEO local fica no título/descrição de `/regioes-atendidas`, na lista de cidades e no `areaServed` do LocalBusiness.
+- **Metadata**: títulos "Sobre a empresa em Ponte Serrada SC", "Estrutura e Logística em Ponte Serrada SC" e "Regiões Atendidas a partir de Ponte Serrada SC", com descrições próprias. noindex mantido.
+- Descrições das fotos (legendas) se limitam ao que aparece na imagem.
+
+### Pendências com o cliente
+
+- Fotos da frota de entrega (truck, 6x4, bitruck, carretas) → `public/images/fleet/frota-principal.jpg`.
+- História, trajetória e equipe para a página Sobre.
+- Confirmar Lindóia × Lindóia do Sul.
+- Fotos originais em maior resolução (≥ 2400 px) e vídeo original do drone.
+- Validar os textos institucionais (operação, diferenciais, legendas das fotos).
+- Confirmar se todas as etapas (lavra, britagem, estocagem) ocorrem no mesmo local em Ponte Serrada e a origem da areia natural.
+
