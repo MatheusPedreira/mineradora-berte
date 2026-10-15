@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Phone } from "lucide-react";
+import { ArrowRight, MessageCircle, Phone } from "lucide-react";
 
 type Variant = "primary" | "outline" | "light" | "outline-light";
 
@@ -14,7 +14,7 @@ type ButtonLinkProps = {
   href: string;
   children: React.ReactNode;
   variant?: Variant;
-  icon?: "arrow" | "phone" | "none";
+  icon?: "arrow" | "phone" | "whatsapp" | "none";
   className?: string;
 };
 
@@ -23,6 +23,7 @@ export function ButtonLink({ href, children, variant = "primary", icon = "arrow"
   const content = (
     <>
       {icon === "phone" ? <Phone aria-hidden="true" className="size-4" strokeWidth={1.75} /> : null}
+      {icon === "whatsapp" ? <MessageCircle aria-hidden="true" className="size-4" strokeWidth={1.75} /> : null}
       <span>{children}</span>
       {icon === "arrow" ? (
         <ArrowRight
@@ -41,8 +42,14 @@ export function ButtonLink({ href, children, variant = "primary", icon = "arrow"
       </Link>
     );
   }
+  // Links externos (WhatsApp) abrem em nova aba no desktop; no celular, o próprio app.
+  const external = href.startsWith("https://");
   return (
-    <a href={href} className={classes}>
+    <a
+      href={href}
+      className={classes}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+    >
       {content}
     </a>
   );

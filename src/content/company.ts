@@ -22,8 +22,18 @@ export const company = {
     e164: "+55-49-99180-1200",
   },
 
-  /** Uso do número como WhatsApp ainda não validado. Preencher apenas após confirmação. */
-  whatsapp: null as string | null,
+  /**
+   * WhatsApp comercial (os dois números confirmados pelo cliente em 15/10/2026).
+   * `primary` recebe o formulário de orçamento e os botões "Falar no WhatsApp";
+   * `secondary` aparece apenas como contato alternativo (/contato e rodapé).
+   * `number`: formato internacional, só dígitos, usado no link wa.me.
+   */
+  whatsapp: {
+    primary: { display: "(49) 98409-3337", number: "5549984093337" },
+    secondary: { display: "(49) 99180-1200", number: "5549991801200" },
+    directMessage:
+      "Olá! Vim pelo site da Mineradora Berté e gostaria de consultar um orçamento de materiais para construção.",
+  },
 
   /** Canal de recebimento do formulário de cotação. `null` = formulário desativado. */
   quoteEndpoint: null as string | null,

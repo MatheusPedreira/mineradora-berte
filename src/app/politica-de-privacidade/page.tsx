@@ -5,12 +5,13 @@ import { pageMetadata } from "@/lib/site";
 
 export const metadata = pageMetadata({
   title: "Política de Privacidade",
-  description: "Política de privacidade do site da Mineradora Berté.",
+  description:
+    "Política de privacidade do site da Mineradora Berté: formulário de orçamento, WhatsApp e dados de contato.",
   path: "/politica-de-privacidade",
 });
 
 // Texto base — revisar com o responsável jurídico antes do lançamento e sempre que
-// um formulário, ferramenta de análise ou pixel de anúncios for adicionado ao site.
+// o envio do formulário mudar ou uma ferramenta de análise ou pixel de anúncios for adicionado.
 export default function PrivacyPage() {
   return (
     <>
@@ -25,20 +26,46 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-graphite">Sobre esta política</h2>
             <p className="mt-3">
               Esta política descreve como o site da {company.name} trata informações de visitantes, em conformidade com
-              a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018).
+              a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018). Última atualização: 15 de outubro de
+              2026.
             </p>
           </section>
           <section>
-            <h2 className="text-2xl font-bold tracking-[-0.02em] text-graphite">Dados coletados</h2>
+            <h2 className="text-2xl font-bold tracking-[-0.02em] text-graphite">Formulário de orçamento</h2>
             <p className="mt-3">
-              No momento, o site não possui formulários e não coleta dados pessoais diretamente. O contato comercial é
-              realizado por telefone. Caso essa condição mude, esta política será atualizada.
+              O formulário de orçamento usa as informações que você digita (nome, telefone, material, quantidade,
+              unidade, entrega ou retirada, cidade, endereço ou referência e observações) apenas para montar a mensagem
+              do pedido na sua tela. O site não envia esses dados para um servidor próprio, não os armazena e não os
+              salva no navegador.
+            </p>
+            <p className="mt-3">
+              Ao tocar em &ldquo;Revisar e enviar pelo WhatsApp&rdquo;, a mensagem é aberta no WhatsApp para você
+              revisar. Ela só chega à {company.name} se você decidir enviá-la.
+            </p>
+          </section>
+          <section>
+            <h2 className="text-2xl font-bold tracking-[-0.02em] text-graphite">WhatsApp e telefone</h2>
+            <p className="mt-3">
+              Os botões de WhatsApp do site abrem uma conversa com os números comerciais da {company.name}. O WhatsApp
+              é um serviço externo, com termos de uso e política de privacidade próprios. Ao abrir e enviar sua
+              solicitação, seu número, seu nome de perfil e o conteúdo da mensagem são compartilhados com esse serviço
+              de mensagens e recebidos pela equipe comercial, que os utiliza para responder ao seu pedido.
+            </p>
+            <p className="mt-3">
+              Os links de telefone apenas iniciam uma ligação pelo aparelho do visitante.
+            </p>
+          </section>
+          <section>
+            <h2 className="text-2xl font-bold tracking-[-0.02em] text-graphite">Ferramentas de análise</h2>
+            <p className="mt-3">
+              No momento, o site não utiliza ferramentas de análise de visitas nem pixels de anúncios. Caso venham a
+              ser adicionadas, esta política será atualizada antes da ativação.
             </p>
           </section>
           <section>
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-graphite">Links externos</h2>
             <p className="mt-3">
-              O site pode conter links para serviços de terceiros, como o Google Maps, que possuem políticas de
+              O site contém links para serviços de terceiros, como o WhatsApp e o Google Maps, que possuem políticas de
               privacidade próprias.
             </p>
           </section>

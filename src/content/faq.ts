@@ -22,7 +22,7 @@ export const faq = [
   },
   {
     question: "Como solicitar um orçamento?",
-    answer: `Ligue para ${company.phone.display} e informe o material, a quantidade, a unidade (tonelada ou m³), se prefere entrega ou retirada e a cidade ou endereço da obra.`,
+    answer: `Preencha o formulário de orçamento do site com o material, a quantidade, a unidade (tonelada ou m³), se prefere entrega ou retirada e a cidade ou endereço da obra. O pedido abre no WhatsApp para você revisar e enviar. Se preferir, ligue ou chame no WhatsApp ${company.phone.display}.`,
   },
   {
     question: "Quais cidades são atendidas?",

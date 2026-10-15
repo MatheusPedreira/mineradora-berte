@@ -2,7 +2,6 @@
 
 import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import { ButtonLink } from "@/components/ui/ButtonLink";
 import { cities, company } from "@/content/company";
 import { getProductsByCategory, productCategories } from "@/content/products";
 import {
@@ -132,7 +131,8 @@ export function QuoteForm({ initialProduct = "" }: { initialProduct?: string }) 
   const [data, setData] = useState<QuoteData>(() => emptyQuote(initialProduct));
   const [errors, setErrors] = useState<QuoteErrors>({});
   const started = useRef(false);
-  const canSend = Boolean(company.whatsapp);
+  /** Link aberto na última tentativa válida (para reabrir se o navegador bloquear a nova aba). */
+  const [openedUrl, setOpenedUrl] = useState<string | null>(null);
 
   function update<K extends keyof QuoteData>(key: K, value: QuoteData[K]) {
     if (!started.current) {
@@ -140,6 +140,7 @@ export function QuoteForm({ initialProduct = "" }: { initialProduct?: string }) 
       track("quote_form_start");
     }
     setData((d) => ({ ...d, [key]: value }));
+    setOpenedUrl(null);
     if (errors[key]) setErrors((e) => ({ ...e, [key]: undefined }));
   }
 
@@ -156,9 +157,10 @@ export function QuoteForm({ initialProduct = "" }: { initialProduct?: string }) 
       return;
     }
     const url = whatsappQuoteUrl(data);
-    if (!url) return;
-    track("quote_whatsapp_open", { material: data.material });
+    // Só o material e a modalidade: nenhum dado pessoal vai para a medição.
+    track("quote_whatsapp_open", { material: data.material, modalidade: data.modalidade });
     window.open(url, "_blank", "noopener,noreferrer");
+    setOpenedUrl(url);
   }
 
   const summary = quoteLines(data);
@@ -344,36 +346,32 @@ export function QuoteForm({ initialProduct = "" }: { initialProduct?: string }) 
           </div>
         ) : null}
 
-        {canSend ? (
-          <>
-            <button
-              type="submit"
-              className="group inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-[2px] bg-navy px-6 text-sm font-semibold tracking-wide text-offwhite transition-colors hover:bg-navy-deep sm:w-auto"
-            >
-              Revisar e enviar pelo WhatsApp
-              <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-1" strokeWidth={1.75} />
-            </button>
-            <p className="mt-3 text-xs leading-relaxed text-basalt">
-              A mensagem abre no WhatsApp com os dados acima para você revisar antes de enviar.
+        <button
+          type="submit"
+          className="group inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-[2px] bg-navy px-6 text-sm font-semibold tracking-wide text-offwhite transition-colors hover:bg-navy-deep sm:w-auto"
+        >
+          Revisar e enviar pelo WhatsApp
+          <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-1" strokeWidth={1.75} />
+        </button>
+        <p className="mt-3 max-w-lg text-xs leading-relaxed text-basalt">
+          A mensagem abre no WhatsApp da {company.name}, {company.whatsapp.primary.display}, com os dados acima para
+          você revisar antes de enviar.
+        </p>
+        <div role="status" className="empty:hidden">
+          {openedUrl ? (
+            <p className="mt-6 border-l-2 border-navy bg-stone px-4 py-3 text-sm leading-relaxed text-graphite">
+              O WhatsApp foi aberto com o seu pedido. Confira a mensagem e toque em enviar para concluir.{" "}
+              <a
+                href={openedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-navy underline underline-offset-4"
+              >
+                Não abriu? Abrir novamente
+              </a>
             </p>
-          </>
-        ) : (
-          <div role="note">
-            <p className="font-display text-lg font-semibold text-graphite">Finalize o pedido por telefone</p>
-            <p className="mt-2 max-w-lg text-sm leading-relaxed text-basalt">
-              O envio pelo site ainda não está disponível. Ligue para a equipe comercial e informe os dados do
-              resumo.
-            </p>
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href={company.phone.href} icon="phone">
-                {company.phone.display}
-              </ButtonLink>
-              <ButtonLink href={company.phoneSecondary.href} variant="outline" icon="phone">
-                {company.phoneSecondary.display}
-              </ButtonLink>
-            </div>
-          </div>
-        )}
+          ) : null}
+        </div>
       </div>
     </form>
   );

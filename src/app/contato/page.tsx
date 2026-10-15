@@ -1,16 +1,18 @@
 import { Suspense } from "react";
-import { ArrowUpRight, Phone } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { QuoteForm } from "@/components/quote/QuoteForm";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { company } from "@/content/company";
 import { getProduct } from "@/content/products";
+import { whatsappDirectHref, whatsappSecondaryHref } from "@/content/quote";
 import { pageMetadata } from "@/lib/site";
 
 export const metadata = pageMetadata({
   title: "Contato e Orçamento",
   description:
-    "Solicite orçamento de areia, brita e agregados com a Mineradora Berté, em Ponte Serrada (SC). Informe material, quantidade e entrega ou retirada, ou ligue (49) 98409-3337.",
+    "Solicite orçamento de areia, brita e agregados com a Mineradora Berté, em Ponte Serrada (SC). Informe material, quantidade e entrega ou retirada e envie pelo WhatsApp, ou ligue (49) 98409-3337.",
   path: "/contato",
 });
 
@@ -46,29 +48,47 @@ export default function ContactPage({ searchParams }: PageProps<"/contato">) {
 
         <aside className="lg:col-span-4 lg:col-start-9">
           <div className="lg:sticky lg:top-28">
-            <section aria-labelledby="telefone" className="on-dark bg-navy p-8 text-offwhite sm:p-10">
-              <h2 id="telefone" className="text-[0.7rem] font-semibold tracking-eyebrow text-sand uppercase">
-                Telefones comerciais
+            <section aria-labelledby="atendimento" className="on-dark bg-navy p-8 text-offwhite sm:p-10">
+              <h2 id="atendimento" className="text-[0.7rem] font-semibold tracking-eyebrow text-sand uppercase">
+                Atendimento comercial
               </h2>
+              <p className="mt-4 text-sm leading-relaxed text-offwhite/75">
+                Prefere conversar antes de preencher? Fale direto com a equipe.
+              </p>
               <a
                 href={company.phone.href}
-                className="mt-4 block font-display text-[2rem] leading-none font-bold tracking-[-0.02em] tabular-nums hover:text-sand sm:text-4xl"
+                className="mt-5 block font-display text-[2rem] leading-none font-bold tracking-[-0.02em] tabular-nums hover:text-sand sm:text-4xl"
               >
                 {company.phone.display}
               </a>
-              <a
-                href={company.phoneSecondary.href}
-                className="mt-3 block font-display text-[2rem] leading-none font-bold tracking-[-0.02em] tabular-nums hover:text-sand sm:text-4xl"
-              >
-                {company.phoneSecondary.display}
-              </a>
-              <a
-                href={company.phone.href}
-                className="group mt-8 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-[2px] bg-offwhite px-6 text-sm font-semibold text-graphite transition-colors hover:bg-sand"
-              >
-                <Phone aria-hidden="true" className="size-4" strokeWidth={1.75} />
-                Ligar agora
-              </a>
+              <p className="mt-2 text-xs text-offwhite/60">Telefone e WhatsApp</p>
+              <div className="mt-6 grid gap-3">
+                <ButtonLink href={whatsappDirectHref} variant="light" icon="whatsapp" className="w-full">
+                  Falar no WhatsApp
+                </ButtonLink>
+                <ButtonLink href={company.phone.href} variant="outline-light" icon="phone" className="w-full">
+                  Ligar agora
+                </ButtonLink>
+              </div>
+
+              <div className="mt-8 border-t border-offwhite/20 pt-6">
+                <h3 className="text-[0.7rem] font-semibold tracking-eyebrow text-sand uppercase">Contato alternativo</h3>
+                <a
+                  href={company.phoneSecondary.href}
+                  className="mt-3 block font-display text-2xl leading-none font-bold tracking-[-0.02em] tabular-nums hover:text-sand"
+                >
+                  {company.phoneSecondary.display}
+                </a>
+                <a
+                  href={whatsappSecondaryHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-offwhite underline decoration-offwhite/40 underline-offset-4 hover:text-sand"
+                >
+                  WhatsApp {company.whatsapp.secondary.display}
+                  <ArrowUpRight aria-hidden="true" className="size-4" strokeWidth={1.75} />
+                </a>
+              </div>
             </section>
 
             <section aria-labelledby="localizacao" className="mt-10 border-t border-line pt-8">

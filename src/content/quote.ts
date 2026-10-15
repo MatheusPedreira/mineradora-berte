@@ -2,9 +2,9 @@ import { company } from "./company";
 import { getProduct } from "./products";
 
 /**
- * Pedido de orçamento. O formulário só oferece envio quando houver um canal confirmado:
- * hoje, apenas o WhatsApp comercial (`company.whatsapp`), que abre a mensagem para o
- * cliente revisar e enviar. Sem canal confirmado, o formulário orienta o contato por telefone.
+ * Pedido de orçamento. O site não envia nem armazena o pedido: o formulário monta a
+ * mensagem e abre o WhatsApp principal (`company.whatsapp.primary`) para o cliente
+ * revisar e enviar. Abrir o WhatsApp não garante que a mensagem foi enviada.
  */
 export type QuoteUnit = "tonelada" | "m3";
 export type QuoteMode = "entrega" | "retirada";
@@ -59,32 +59,69 @@ export function validateQuote(q: QuoteData): QuoteErrors {
   return errors;
 }
 
+type QuoteLine = { label: string; value: string; group: "pedido" | "dados" | "obs" };
+
+function quantityText(q: QuoteData) {
+  if (!q.quantidade || !q.unidade) return "";
+  const qty = q.quantidade.trim();
+  if (q.unidade === "m3") return `${qty} m³`;
+  return `${qty} ${Number(qty.replace(",", ".")) === 1 ? "tonelada" : "toneladas"}`;
+}
+
 /** Linhas do pedido (resumo na tela e mensagem do WhatsApp). Campos vazios são omitidos. */
-export function quoteLines(q: QuoteData): { label: string; value: string }[] {
+export function quoteLines(q: QuoteData): QuoteLine[] {
   const product = getProduct(q.material);
   const city = q.cidade === OTHER_CITY ? q.outraCidade.trim() : q.cidade;
-  const lines = [
-    { label: "Material", value: product?.name ?? "" },
-    { label: "Quantidade", value: q.quantidade && q.unidade ? `${q.quantidade.trim()} ${unitLabels[q.unidade]}` : "" },
-    { label: "Fornecimento", value: q.modalidade ? modeLabels[q.modalidade] : "" },
-    { label: "Cidade", value: q.modalidade === "entrega" ? city : "" },
-    { label: "Endereço/referência", value: q.modalidade === "entrega" ? q.endereco.trim() : "" },
-    { label: "Nome", value: q.nome.trim() },
-    { label: "Telefone", value: q.telefone.trim() },
-    { label: "Observações", value: q.observacoes.trim() },
+  const lines: QuoteLine[] = [
+    { label: "Material", value: product?.name ?? "", group: "pedido" },
+    { label: "Quantidade", value: quantityText(q), group: "pedido" },
+    { label: "Modalidade", value: q.modalidade ? modeLabels[q.modalidade] : "", group: "pedido" },
+    { label: "Cidade", value: q.modalidade === "entrega" ? city : "", group: "pedido" },
+    { label: "Endereço/referência", value: q.modalidade === "entrega" ? q.endereco.trim() : "", group: "pedido" },
+    { label: "Nome", value: q.nome.trim(), group: "dados" },
+    { label: "Telefone", value: q.telefone.trim(), group: "dados" },
+    { label: "Observações", value: q.observacoes.trim(), group: "obs" },
   ];
   return lines.filter((l) => l.value);
 }
 
-/** Link do WhatsApp com a mensagem estruturada. `null` enquanto o número não for confirmado. */
-export function whatsappQuoteUrl(q: QuoteData): string | null {
-  if (!company.whatsapp) return null;
-  const text = [
-    `Olá! Gostaria de um orçamento com a ${company.name}.`,
+/** Link wa.me com mensagem opcional, sempre codificada. `number`: só dígitos, com DDI. */
+export function whatsappUrl(number: string, text?: string) {
+  const base = `https://wa.me/${number.replace(/\D/g, "")}`;
+  return text ? `${base}?text=${encodeURIComponent(text)}` : base;
+}
+
+/** "Falar no WhatsApp": conversa direta com o WhatsApp principal. */
+export const whatsappDirectHref = whatsappUrl(company.whatsapp.primary.number, company.whatsapp.directMessage);
+
+/** Contato alternativo (somente /contato e rodapé). */
+export const whatsappSecondaryHref = whatsappUrl(company.whatsapp.secondary.number, company.whatsapp.directMessage);
+
+/** Mensagem do pedido, no modelo aprovado. Campos vazios não aparecem. */
+export function quoteMessage(q: QuoteData) {
+  const lines = quoteLines(q);
+  const block = (group: QuoteLine["group"]) =>
+    lines.filter((l) => l.group === group).map((l) => `*${l.label}:* ${l.value}`);
+  const obs = block("obs");
+  return [
+    `Olá! Gostaria de solicitar um orçamento na ${company.name}.`,
     "",
-    ...quoteLines(q).map((l) => `*${l.label}:* ${l.value}`),
+    "*Dados do pedido*",
+    "",
+    ...block("pedido"),
+    "",
+    "*Meus dados*",
+    "",
+    ...block("dados"),
+    ...(obs.length ? ["", ...obs] : []),
+    "",
+    "Aguardo o retorno com as condições de fornecimento. Obrigado!",
   ].join("\n");
-  return `https://wa.me/${company.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`;
+}
+
+/** Pedido completo para o WhatsApp principal (usar somente após `validateQuote`). */
+export function whatsappQuoteUrl(q: QuoteData) {
+  return whatsappUrl(company.whatsapp.primary.number, quoteMessage(q));
 }
 
 /** Máscara simples para telefone brasileiro: (49) 99999-9999. */

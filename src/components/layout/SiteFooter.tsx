@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { company } from "@/content/company";
 import { mainNav, quoteHref } from "@/content/navigation";
 import { products } from "@/content/products";
+import { whatsappDirectHref, whatsappSecondaryHref } from "@/content/quote";
 
 const linkClass = "link-underline text-offwhite/70 transition-colors hover:text-offwhite";
 
@@ -65,10 +66,27 @@ export function SiteFooter() {
               {company.phone.display}
             </a>
             <a
+              href={whatsappDirectHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`mt-1 inline-block text-sm ${linkClass}`}
+            >
+              Falar no WhatsApp
+            </a>
+            <p className="mt-5 text-xs text-offwhite/60">Contato alternativo</p>
+            <a
               href={company.phoneSecondary.href}
-              className="mt-2 block font-display text-2xl font-semibold tracking-tight tabular-nums transition-colors hover:text-sand"
+              className="mt-1 block font-display text-2xl font-semibold tracking-tight tabular-nums transition-colors hover:text-sand"
             >
               {company.phoneSecondary.display}
+            </a>
+            <a
+              href={whatsappSecondaryHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`mt-1 inline-block text-sm ${linkClass}`}
+            >
+              WhatsApp alternativo
             </a>
             <p className="mt-6 text-sm leading-relaxed text-offwhite/70">
               {company.address.plusCode} — {company.address.city}, {company.address.state}

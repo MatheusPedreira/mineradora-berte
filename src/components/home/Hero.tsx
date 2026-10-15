@@ -5,6 +5,7 @@ import { MediaSlot } from "@/components/ui/MediaSlot";
 import { company } from "@/content/company";
 import { media } from "@/content/media";
 import { quoteHref } from "@/content/navigation";
+import { whatsappDirectHref } from "@/content/quote";
 
 const heroSizes = "(min-width: 1024px) 58vw, 100vw";
 
@@ -94,6 +95,15 @@ export function Hero() {
               className="font-semibold text-ink underline decoration-sand decoration-2 underline-offset-4 transition-colors hover:text-navy hover:decoration-navy"
             >
               Ligue {company.phone.display}
+            </a>{" "}
+            ou{" "}
+            <a
+              href={whatsappDirectHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-ink underline decoration-sand decoration-2 underline-offset-4 transition-colors hover:text-navy hover:decoration-navy"
+            >
+              fale no WhatsApp
             </a>
           </p>
 

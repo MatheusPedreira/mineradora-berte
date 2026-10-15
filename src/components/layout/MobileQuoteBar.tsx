@@ -2,14 +2,15 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Phone } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { company } from "@/content/company";
 import { quoteHref } from "@/content/navigation";
+import { whatsappDirectHref } from "@/content/quote";
 
 /**
- * Atalho de orçamento no celular (abaixo de 640px o header não tem o botão).
- * Aparece depois que o visitante rola a página; não é exibido na própria página de contato.
+ * Atalho de orçamento no celular (abaixo de 640px o header não tem o botão):
+ * "Solicitar orçamento" leva ao formulário; "WhatsApp" abre a conversa com o número principal.
+ * Aparece depois que o visitante rola a página; não é exibido na página de contato (formulário).
  */
 export function MobileQuoteBar() {
   const pathname = usePathname();
@@ -28,7 +29,7 @@ export function MobileQuoteBar() {
     <div
       inert={!visible}
       aria-hidden={!visible}
-      className={`fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-line bg-offwhite px-4 py-3 transition-transform duration-300 ease-out-quart sm:hidden ${
+      className={`fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-line bg-offwhite px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-transform duration-300 ease-out-quart sm:hidden ${
         visible ? "translate-y-0" : "translate-y-full"
       }`}
     >
@@ -36,11 +37,13 @@ export function MobileQuoteBar() {
         Solicitar orçamento
       </ButtonLink>
       <a
-        href={company.phone.href}
-        aria-label={`Ligar para ${company.phone.display}`}
-        className="inline-flex size-12 shrink-0 items-center justify-center rounded-[2px] border border-ink/45 text-ink"
+        href={whatsappDirectHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-[2px] border border-ink/45 px-4 text-sm font-semibold text-ink"
       >
-        <Phone aria-hidden="true" className="size-4" strokeWidth={1.75} />
+        <MessageCircle aria-hidden="true" className="size-4" strokeWidth={1.75} />
+        WhatsApp
       </a>
     </div>
   );

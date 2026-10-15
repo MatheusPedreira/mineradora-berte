@@ -1,6 +1,6 @@
 # Mineradora Berté — Briefing do site
 
-Status: **Etapa 04** concluída (arquitetura comercial para Google Ads, catálogo único, formulário de orçamento). Domínio oficial em uso como ambiente de testes, `noindex`.
+Status: **Etapa 05A** concluída (WhatsApp comercial ativo no formulário de orçamento e nos contatos diretos). Domínio oficial em uso como ambiente de testes, `noindex`.
 
 ---
 
@@ -24,9 +24,9 @@ Status: **Etapa 04** concluída (arquitetura comercial para Google Ads, catálog
 
 ## 2. Dados pendentes
 
-- [ ] **WhatsApp** — validar se (49) 98409-3337 atende WhatsApp. Até lá, `company.whatsapp = null` e nenhum link de WhatsApp é exibido.
+- [x] **WhatsApp** — os dois números têm WhatsApp (confirmado em 15/10/2026). Principal (49) 98409-3337; secundário (49) 99180-1200. Ver seção 12.
 - [ ] **Lindóia** — confirmar se é **Lindóia do Sul**. Está marcada `confirmed: false` e fica fora do JSON-LD `areaServed`.
-- [ ] **Canal do formulário de cotação** — e-mail, CRM ou serviço de envio. Até lá, `company.quoteEndpoint = null` e a página de contato mostra o roteiro do pedido, sem formulário enviável.
+- [x] **Canal do formulário de cotação** — WhatsApp principal: o formulário monta a mensagem e o cliente revisa e envia. Envio por e-mail/CRM (backend) continua não implementado (`company.quoteEndpoint = null`).
 - [ ] **Domínio oficial** — necessário para canonicals, sitemap e indexação.
 - [ ] **Logo em vetor (SVG/AI/PDF)** — os recortes atuais vêm de um PNG. Um vetor melhora a nitidez e permite versões oficiais (horizontal, negativa, monocromática).
 - [x] **Fotografias reais (lote 1)** — 6 fotos e 2 vídeos enviados pela empresa e confirmados como originais (15/10/2026). Ver seção 7.
@@ -77,7 +77,7 @@ Slugs: `brita-1`, `pedrisco`, `areia-industrial`, `areia-natural`, `po-de-brita`
 ## 5. Pendências para lançamento
 
 1. Fotos reais em `public/images/*` e preencher `src` em `src/content/media.ts` e `src/content/products.ts`.
-2. Confirmar WhatsApp → se confirmado, adicionar botão de WhatsApp.
+2. ~~Confirmar WhatsApp~~ — feito na Etapa 05A.
 3. Definir o canal do formulário → implementar envio real (Server Action + serviço de e-mail/CRM) e trocar o roteiro pelo formulário.
 4. Confirmar Lindóia / Lindóia do Sul.
 5. Logo em vetor.
@@ -85,7 +85,7 @@ Slugs: `brita-1`, `pedrisco`, `areia-industrial`, `areia-natural`, `po-de-brita`
 7. Imagem de Open Graph (1200×630) com foto real ou com a marca.
 8. Configurar domínio na Vercel, `NEXT_PUBLIC_SITE_URL` e, no lançamento, `NEXT_PUBLIC_SITE_INDEXABLE=true`.
 9. Google Search Console + envio do sitemap; perfil da empresa no Google com o mesmo NAP (nome, endereço, telefone).
-10. Tag do Google Ads / GA4 com acompanhamento de cliques em `tel:` como conversão (exige atualizar a Política de Privacidade).
+10. Tag do Google Ads / GA4 a partir dos eventos de `src/lib/analytics.ts` (exige atualizar a Política de Privacidade antes de ativar).
 11. Revisão jurídica da Política de Privacidade.
 
 ## 6. Fotografias — como entregar
@@ -297,7 +297,7 @@ Ajuste de conversão: abaixo de 640px o header não tem botão de orçamento; fo
 
 - Principal: **(49) 98409-3337** (`company.phone`) — header, hero, CTAs, barra do celular, JSON-LD.
 - Secundário: **(49) 99180-1200** (`company.phoneSecondary`) — rodapé, /contato, final do formulário, /regioes-atendidas.
-- Nenhum número é tratado como WhatsApp.
+- Nenhum número é tratado como WhatsApp. *(Atualizado na Etapa 05A: os dois têm WhatsApp — ver seção 12.)*
 
 ### Analytics (`src/lib/analytics.ts`)
 
@@ -319,4 +319,114 @@ Para medir no Google Ads: instalar a tag (com ID real fornecido pelo cliente), c
 - Definir canal de recebimento do formulário (WhatsApp, e-mail ou CRM).
 - Conta do Google Ads / GTM para instalação da tag e definição das conversões.
 - Atualizar a Política de Privacidade ao ativar formulário e medição.
+
+---
+
+## 12. Etapa 05A — WhatsApp e sistema de orçamentos (15/10/2026)
+
+### Números (configuração única em `src/content/company.ts`)
+
+| Uso | Número | Campo |
+| --- | --- | --- |
+| **WhatsApp principal** — formulário de orçamento, "Falar no WhatsApp" (hero, /contato, rodapé, barra do celular) | (49) 98409-3337 · `5549984093337` | `company.whatsapp.primary` |
+| **WhatsApp secundário** — somente contato alternativo em /contato e no rodapé | (49) 99180-1200 · `5549991801200` | `company.whatsapp.secondary` |
+| Telefone principal (ligação, JSON-LD) | (49) 98409-3337 | `company.phone` |
+| Telefone secundário (ligação) | (49) 99180-1200 | `company.phoneSecondary` |
+
+Para trocar um número, alterar apenas `company.ts`. Os links são gerados em `src/content/quote.ts` (`whatsappUrl`, `whatsappDirectHref`, `whatsappSecondaryHref`, `whatsappQuoteUrl`) no formato `https://wa.me/<número>?text=<encodeURIComponent(mensagem)>`, que funciona em Android, iPhone e navegadores desktop, sem API paga nem bibliotecas.
+
+### Hierarquia dos CTAs
+
+```
+"Solicitar orçamento" (header, menu, hero, catálogo, institucionais, CTA final, rodapé, barra do celular)
+   → /contato (catálogo: /contato?produto=<slug>) → formulário → "Revisar e enviar pelo WhatsApp" → WhatsApp principal
+
+"Falar no WhatsApp" (hero da Home, /contato, rodapé, barra do celular)
+   → abre direto a conversa com o WhatsApp principal
+
+Telefones (header, hero, CTA final, /contato, rodapé) → ligação
+```
+
+Os botões "Solicitar orçamento" **não** foram transformados em links de WhatsApp.
+
+### Formulário
+
+- Campos, validação, máscara, pré-seleção, campos condicionais e resumo mantidos (Etapa 04).
+- O encerramento por telefone foi substituído pelo botão **"Revisar e enviar pelo WhatsApp"**:
+  1. valida todos os campos obrigatórios; com erro, mostra as mensagens, foca o primeiro campo inválido e mantém os dados;
+  2. com dados válidos, abre o WhatsApp principal (nova aba no desktop; app no celular) com a mensagem pronta;
+  3. mostra o aviso "O WhatsApp foi aberto com o seu pedido. Confira a mensagem e toque em enviar para concluir." com o link "Não abriu? Abrir novamente" (caso o navegador bloqueie a aba). **Nunca** afirma que o pedido foi enviado.
+- O site não envia o pedido a servidor próprio, não grava em `localStorage` e não registra logs com os dados.
+
+### Mensagem do WhatsApp (campos vazios são omitidos)
+
+```
+Olá! Gostaria de solicitar um orçamento na Mineradora Berté.
+
+*Dados do pedido*
+
+*Material:* Brita 1
+*Quantidade:* 20 toneladas
+*Modalidade:* Entrega
+*Cidade:* Xanxerê
+*Endereço/referência:* (se informado)
+
+*Meus dados*
+
+*Nome:* …
+*Telefone:* …
+
+*Observações:* (se houver)
+
+Aguardo o retorno com as condições de fornecimento. Obrigado!
+```
+
+Sem conversão de unidades, preços ou prazos. Mensagem do botão direto: "Olá! Vim pelo site da Mineradora Berté e gostaria de consultar um orçamento de materiais para construção." (`company.whatsapp.directMessage`).
+
+### Barra do celular
+
+"Solicitar orçamento" (formulário) + "WhatsApp" (conversa direta, número principal). Continua aparecendo só abaixo de 640px, após rolar a página, e nunca em /contato (onde estão os campos do formulário e o teclado). O menu do celular fica acima da barra.
+
+### Medição (`src/lib/analytics.ts`, `ConversionTracking.tsx`)
+
+Nenhuma ferramenta instalada (GA4, GTM, Google Ads e Meta Pixel ficam para depois). Os eventos só vão para `window.dataLayer` se uma tag criar esse array.
+
+| Evento | Quando | Parâmetros |
+| --- | --- | --- |
+| `phone_click` | clique em `tel:` | número da empresa, página |
+| `whatsapp_click` | clique em link direto do WhatsApp | `principal`/`secundario`, página |
+| `product_quote_click` | "Solicitar orçamento" de um material no catálogo | slug do material, página |
+| `quote_form_start` | primeira interação com o formulário | — |
+| `quote_whatsapp_open` | formulário **validado** tentou abrir o WhatsApp | slug do material, modalidade |
+
+`quote_whatsapp_open` é apenas a tentativa de abrir o WhatsApp: não é venda nem pedido recebido. Não há `purchase` nem `quote_submit_success`; `quote_submitted` continua reservado para um backend com confirmação real. Nenhum evento leva nome, telefone, endereço ou mensagem. Um listener delegado gera um único evento por clique.
+
+### Política de Privacidade
+
+Atualizada conforme o funcionamento real: formulário só monta a mensagem (sem armazenamento), WhatsApp é serviço externo, os dados são compartilhados com o serviço de mensagens quando o usuário envia, e o site não usa ferramentas de análise nem pixels. FAQ "Como solicitar um orçamento?" atualizada para o formulário/WhatsApp.
+
+### Testes realizados (dados fictícios; `window.open` e links wa.me interceptados — nenhuma mensagem enviada)
+
+1. Brita 1 + entrega + Xanxerê (pré-seleção pelo catálogo) → mensagem completa para `5549984093337`.
+2. Areia natural + retirada → sem cidade/endereço na mensagem; "8 m³".
+3. Sem produto pré-selecionado → material vazio.
+4. Produto válido do catálogo → pré-selecionado; `product_quote_click` registrado.
+5. Produto inválido na URL → ignorado.
+6. Cidade da lista → incluída. 7. "Outra cidade" vazia bloqueia; preenchida (Joaçaba) entra na mensagem.
+8. Quantidade `0`, `abc`, `,`, `0,0` → bloqueada; `12,5` aceita.
+9. Telefone incompleto → erro, foco no campo, demais dados mantidos.
+10. Campos vazios → 6 mensagens de erro, foco no material, WhatsApp não abre, nenhum evento.
+11. WhatsApp direto do hero e da barra → número principal, `whatsapp_click` principal.
+12. WhatsApp secundário em /contato e rodapé → `5549991801200`, `whatsapp_click` secundario.
+13. Links `tel:` → `phone_click`.
+14. Barra do celular: oculta no topo, visível após rolar, ausente em /contato.
+
+Layout: 8 páginas × 360/390/768/1024/1440/1920 sem layout shift, sem overflow horizontal, sem IDs duplicados, sem links sem nome, 1 H1 por página. `npm run lint`, `npx tsc --noEmit` e `npm run build` sem erros.
+
+### Pendências
+
+- Instalar GTM/GA4/Google Ads com IDs reais e criar as conversões a partir dos eventos (atualizar a Política antes).
+- Envio por e-mail/CRM com confirmação real, se desejado (exige backend).
+- Revisão jurídica da Política de Privacidade.
+- Demais pendências das seções 2, 9 e 10 (fotos da frota e produtos, especificações, Lindóia, logo em vetor).
 
