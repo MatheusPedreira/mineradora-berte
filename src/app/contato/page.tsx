@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { ArrowUpRight, Phone } from "lucide-react";
+import { QuoteProductNote } from "@/components/product/QuoteProductNote";
 import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { company } from "@/content/company";
@@ -12,7 +14,7 @@ export const metadata = pageMetadata({
   path: "/contato",
 });
 
-export default function ContactPage() {
+export default function ContactPage({ searchParams }: PageProps<"/contato">) {
   return (
     <>
       <PageHeader
@@ -85,6 +87,9 @@ export default function ContactPage() {
           <p className="mt-4 max-w-md text-base leading-relaxed text-basalt">
             Para agilizar o orçamento, tenha em mãos as informações abaixo ao ligar.
           </p>
+          <Suspense fallback={null}>
+            <QuoteProductNote searchParams={searchParams} />
+          </Suspense>
           <ol className="mt-8 border-t border-ink/15">
             {quoteFields.map((field, i) => (
               <li key={field.name} className="flex items-baseline gap-5 border-b border-ink/15 py-4">

@@ -3,7 +3,19 @@ import { Container } from "@/components/ui/Container";
 import { company } from "@/content/company";
 import { quoteHref } from "@/content/navigation";
 
-export function FinalCta() {
+type FinalCtaProps = {
+  title?: string;
+  text?: string;
+  /** Destino do botão de orçamento (ex.: /contato?produto=brita-1). */
+  href?: string;
+};
+
+const defaults = {
+  title: "Precisa de areia, brita ou agregados para a obra?",
+  text: "Informe o material, a quantidade em tonelada ou m³ e se prefere entrega na obra ou retirada em Ponte Serrada. Solicite seu orçamento ou ligue para a equipe comercial.",
+};
+
+export function FinalCta({ title = defaults.title, text = defaults.text, href = quoteHref }: FinalCtaProps) {
   return (
     <section aria-labelledby="cta-titulo" className="on-dark relative overflow-hidden bg-navy text-offwhite">
       {/* Geometria discreta derivada do símbolo da marca */}
@@ -24,14 +36,13 @@ export function FinalCta() {
             id="cta-titulo"
             className="text-[2.3rem] leading-[1] font-bold tracking-[-0.035em] sm:text-6xl xl:text-[4.5rem]"
           >
-            Precisa de areia, brita ou agregados para a obra?
+            {title}
           </h2>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-offwhite/75 sm:text-lg">
-            Informe o material, a quantidade em tonelada ou m³ e se prefere entrega na obra ou retirada em Ponte
-            Serrada. Solicite seu orçamento ou ligue para a equipe comercial.
+            {text}
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href={quoteHref} variant="light">
+            <ButtonLink href={href} variant="light">
               Solicitar orçamento
             </ButtonLink>
             <ButtonLink href={company.phone.href} variant="outline-light" icon="phone">

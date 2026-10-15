@@ -32,6 +32,7 @@ export function ProductsShowcase() {
             <ProductTile
               product={lead}
               large
+              fill
               sizes="(min-width: 1024px) 50vw, 100vw"
               className="col-span-2 lg:col-span-6 lg:row-span-2"
             />

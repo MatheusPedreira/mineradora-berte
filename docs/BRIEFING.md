@@ -56,8 +56,8 @@ Status: **Etapa 01** (base do projeto + Home). Ambiente de desenvolvimento, sem 
 | Rota | Conteúdo | Status |
 | --- | --- | --- |
 | `/` | Hero, Diferenciais, Produtos, Estrutura e Logística, Qualidade, Regiões, FAQ, CTA final | Completa (aguarda fotos) |
-| `/produtos` | Catálogo por categoria | Básica |
-| `/produtos/[slug]` | 10 páginas estáticas; ficha com comercialização e fornecimento; especificações e aplicações aparecem quando forem cadastradas | Básica |
+| `/produtos` | Hero, índice visual (10 materiais + atalhos por categoria), catálogo em 3 seções | Concluída (Etapa 02) |
+| `/produtos/[slug]` | 10 páginas estáticas: hero, sobre o material, fornecimento, ficha técnica (quando houver), outros materiais, CTA com produto | Concluída (Etapa 02), aguarda fotos e dados técnicos |
 | `/estrutura-e-logistica` | Frota e modalidades de fornecimento | Básica |
 | `/sobre` | Apresentação com dados confirmados + diferenciais | Básica |
 | `/regioes-atendidas` | Base de operação + cidades | Básica |
@@ -148,3 +148,52 @@ Fotos de produto: ao preencher `image.src` em `src/content/products.ts`, a foto 
 - [x] O novo texto do CTA final aparece também nas páginas internas (componente compartilhado).
 - [x] Acessibilidade: `sand-deep` escurecido de #8A7A62 (3,4–3,8:1) para #736550 (4,6–5,1:1 sobre off-white e pedra), mesmo matiz da areia.
 - [ ] "Lindóia" mantida sem alteração até confirmação do cliente (Lindóia do Sul?).
+
+## 9. Etapa 02 — Catálogo e páginas de produto (15/10/2026)
+
+### Estrutura
+
+**`/produtos`**
+1. Cabeçalho: "Agregados para diferentes necessidades de construção." + texto comercial.
+2. Índice visual (grafite): "10" em contorno + as 3 categorias com contagem, descrição e atalho (âncoras `#britas`, `#areias`, `#rachoes`). Filtro simples, sem JavaScript.
+3. Uma seção por categoria: título e descrição fixos à esquerda (sticky no desktop), materiais à direita em 2 colunas. Com número ímpar de materiais, o primeiro ocupa a largura toda (mesma composição assimétrica da Home).
+4. CTA final do site.
+
+**`/produtos/[slug]`** (um único modelo para os 10)
+1. Breadcrumbs (Início / Produtos / Material) com BreadcrumbList quando houver domínio.
+2. Hero: número + categoria, H1 com o nome, frase comercial, comercialização e fornecimento, "Solicitar orçamento" (com o produto) e telefone; painel numerado no lugar da foto.
+3. "O que é …?": texto geral sobre o tipo de material, identificado como informativo. Rachões sem texto próprio usam a descrição da categoria.
+4. Fornecimento: tonelada ou m³, entrega com frota própria, retirada em Ponte Serrada; condições sob consulta e aviso de que não há conversão fixa t ↔ m³.
+5. Ficha técnica: só aparece quando houver dados confirmados (`technical` em `products.ts`).
+6. Outros materiais: mesma categoria primeiro, depois os seguintes do catálogo (sem relação técnica presumida) + índice completo dos 10.
+7. CTA: "Precisa de [material] para sua obra?" → `/contato?produto=<slug>`.
+
+**`/contato?produto=<slug>`**: mostra "Material do pedido: …". O parâmetro só é aceito se for um slug do catálogo; outros valores são ignorados.
+
+### Componentes
+`src/components/product/`: `ProductHero`, `ProductInformation`, `ProductSpecifications`, `ProductSupply`, `RelatedProducts`, `ProductQuoteCta` (reaproveita `FinalCta`), `QuoteProductNote`.
+`src/components/ui/ProductMedia.tsx`: foto ou painel numerado, usado no card e no hero do produto.
+
+### Como completar um produto (`src/content/products.ts`)
+- **Foto:** salvar em `public/images/products/<slug>.jpg` (4:3, ≥ 1600 px) e preencher `image.src`. O painel é trocado pela foto sem mudar o layout.
+- **Descrição oficial:** `description`.
+- **Ficha técnica:** `technical.granulometry`, `characteristics`, `applications`, `unit`, `notes` (todos opcionais; campos vazios não aparecem).
+
+### SEO
+- Title único (`<Material> em Ponte Serrada SC | Mineradora Berté`), meta description própria (`summary`), H1 único, URL descritiva, breadcrumbs, links internos (catálogo, relacionados, regiões, contato).
+- Open Graph com título e descrição de cada material; imagem de compartilhamento padrão do site.
+- **Sem JSON-LD `Product`**: o Google exige `offers`, `review` ou `aggregateRating` para esse tipo, e não há preço nem avaliações confirmados.
+- Material inexistente (`/produtos/qualquer-coisa`) retorna **404 real** via `src/proxy.ts` (com Cache Components, o `notFound()` da página chegaria com status 200).
+- Canonical, sitemap e `noindex` sem alteração.
+
+### Decisões de design
+- Ordem do catálogo agrupada por categoria (Britas 01–05, Areias 06–07, Rachões 08–10), para a numeração ficar sequencial no catálogo. Na Home, os destaques passaram a ser Brita 1, Pedrisco, Pó de brita, Areia industrial e Areia natural (mesmos 5 materiais, nova ordem).
+- Destaque visual do primeiro material de Britas (Brita 1) e de Rachões (Rachãozinho primário) é só de composição, não indica relevância comercial.
+
+### Pendências com o cliente
+- [ ] Fotos dos 10 materiais (close, luz natural, mesmo enquadramento).
+- [ ] Descrição oficial e ficha técnica de cada material (faixa granulométrica, características, aplicações).
+- [ ] O que diferencia **Rachãozinho primário**, **Rachão mina** e **Rachão mataco** (hoje sem texto próprio).
+- [ ] Origem de cada material (ex.: se a areia natural é extraída pela própria Berté ou adquirida).
+- [ ] Validar os textos gerais de "O que é …?".
+- [ ] Validar o agrupamento em 3 categorias.
