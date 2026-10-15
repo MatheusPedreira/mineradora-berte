@@ -46,7 +46,7 @@ export default function ContactPage({ searchParams }: PageProps<"/contato">) {
           </Suspense>
         </section>
 
-        <aside className="lg:col-span-4 lg:col-start-9">
+        <aside data-track-location="contact_aside" className="lg:col-span-4 lg:col-start-9">
           <div className="lg:sticky lg:top-28">
             <section aria-labelledby="atendimento" className="on-dark bg-navy p-8 text-offwhite sm:p-10">
               <h2 id="atendimento" className="text-[0.7rem] font-semibold tracking-eyebrow text-sand uppercase">

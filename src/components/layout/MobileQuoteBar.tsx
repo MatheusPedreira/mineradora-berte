@@ -23,10 +23,18 @@ export function MobileQuoteBar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const shown = visible && pathname !== quoteHref;
+  // Permite que o aviso de cookies fique acima da barra, sem cobrir o WhatsApp.
+  useEffect(() => {
+    document.documentElement.toggleAttribute("data-quote-bar", shown);
+    return () => document.documentElement.removeAttribute("data-quote-bar");
+  }, [shown]);
+
   if (pathname === quoteHref) return null;
 
   return (
     <div
+      data-track-location="mobile_bar"
       inert={!visible}
       aria-hidden={!visible}
       className={`fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-line bg-offwhite px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-transform duration-300 ease-out-quart sm:hidden ${

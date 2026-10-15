@@ -17,7 +17,7 @@ const defaults = {
 
 export function FinalCta({ title = defaults.title, text = defaults.text, href = quoteHref }: FinalCtaProps) {
   return (
-    <section aria-labelledby="cta-titulo" className="on-dark relative overflow-hidden bg-navy text-offwhite">
+    <section aria-labelledby="cta-titulo" data-track-location="final_cta" className="on-dark relative overflow-hidden bg-navy text-offwhite">
       {/* Geometria discreta derivada do símbolo da marca */}
       <svg
         aria-hidden="true"

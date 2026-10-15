@@ -26,6 +26,7 @@ export function CatalogItem({ product, sizes, large, className = "" }: CatalogIt
   return (
     <article
       id={product.slug}
+      data-track-location="catalog"
       aria-labelledby={`${product.slug}-nome`}
       className={`grid scroll-mt-28 grid-cols-[6.5rem_1fr] gap-4 border-b border-line pb-6 sm:flex sm:flex-col sm:gap-0 sm:pb-0 ${className}`}
     >

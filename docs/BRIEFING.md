@@ -1,6 +1,6 @@
 # Mineradora Berté — Briefing do site
 
-Status: **Etapa 05A** concluída (WhatsApp comercial ativo no formulário de orçamento e nos contatos diretos). Domínio oficial em uso como ambiente de testes, `noindex`.
+Status: **Etapa 05B** concluída (infraestrutura de mensuração pronta e desativada até receber os IDs reais — ver `docs/ANALYTICS_SETUP.md`). Domínio oficial em uso como ambiente de testes, `noindex`.
 
 ---
 
@@ -389,6 +389,8 @@ Sem conversão de unidades, preços ou prazos. Mensagem do botão direto: "Olá!
 
 ### Medição (`src/lib/analytics.ts`, `ConversionTracking.tsx`)
 
+> Parâmetros atualizados na Etapa 05B — a tabela vigente está em `docs/ANALYTICS_SETUP.md`, seção 3.
+
 Nenhuma ferramenta instalada (GA4, GTM, Google Ads e Meta Pixel ficam para depois). Os eventos só vão para `window.dataLayer` se uma tag criar esse array.
 
 | Evento | Quando | Parâmetros |
@@ -429,4 +431,26 @@ Layout: 8 páginas × 360/390/768/1024/1440/1920 sem layout shift, sem overflow 
 - Envio por e-mail/CRM com confirmação real, se desejado (exige backend).
 - Revisão jurídica da Política de Privacidade.
 - Demais pendências das seções 2, 9 e 10 (fotos da frota e produtos, especificações, Lindóia, logo em vetor).
+
+---
+
+## 13. Etapa 05B — Infraestrutura de mensuração (15/10/2026)
+
+Guia completo: **`docs/ANALYTICS_SETUP.md`** (IDs, passos no GTM/GA4, eventos, consentimento, conversões, testes, Search Console).
+
+- **Nenhuma tag ativa.** Não havia instalação anterior de GTM/GA4/Ads/Pixel. Sem `NEXT_PUBLIC_GTM_ID` o site não carrega scripts externos, não exibe aviso de cookies e não cria `dataLayer`.
+- **GTM como único gerenciador** (`src/components/analytics/ConsentManager.tsx`): carregado só com ID real **e** após autorização (Consent Mode v2 básico; padrão negado para `analytics_storage`, `ad_storage`, `ad_user_data`, `ad_personalization`). GA4 e Google Ads ficam dentro do container.
+- **Aviso de cookies** compacto: Aceitar, Recusar, Preferências (Análise e Publicidade desmarcadas). Fica acima da barra do celular, sem cobrir o WhatsApp. "Preferências de cookies" no rodapé e na Política (só com o GTM configurado).
+- **Camada de dados padronizada:** `phone_click`, `whatsapp_click`, `product_quote_click`, `quote_form_start`, `quote_whatsapp_open`, com `contact_line` (principal/secundario), `link_location` (atributo `data-track-location` nos componentes), `product_slug`, `supply_mode`, `quantity_unit`, `page_path`. Nenhum dado pessoal.
+- **Política de Privacidade:** a seção "Ferramentas de análise" descreve GTM/GA4/Google Ads e o consentimento automaticamente quando o ID estiver configurado.
+- **Search Console:** não verificado (sem acesso). Meta de verificação opcional via `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION`. Recomendação documentada para o conflito `Disallow: /` × `noindex` — **não aplicada**, aguarda aprovação.
+- **Acessibilidade:** links de WhatsApp do rodapé com área de toque de 44px; Unidade e Modalidade com borda e fundo de erro.
+- **Variáveis novas** (`.env.example`): `NEXT_PUBLIC_GTM_ID`, `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` — ambas vazias.
+
+### Pendências
+
+- IDs reais (GTM, GA4, Google Ads) e acesso às contas; testes com Tag Assistant e DebugView.
+- Aprovação da estratégia de conversões e do modo de consentimento.
+- Revisão jurídica da Política e do aviso de cookies.
+- Aprovação da correção do `robots.txt` e do método de verificação do Search Console.
 

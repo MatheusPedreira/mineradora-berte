@@ -89,7 +89,7 @@ const modes = [
 /** Hero escuro: título em destaque e fotografia panorâmica da usina. */
 function StructureHero() {
   return (
-    <section aria-labelledby="estrutura-titulo" className="on-dark bg-graphite text-offwhite">
+    <section aria-labelledby="estrutura-titulo" data-track-location="page_hero" className="on-dark bg-graphite text-offwhite">
       <Container className="pt-8 sm:pt-10">
         <Breadcrumbs tone="dark" items={[{ name: "Estrutura e Logística", path: "/estrutura-e-logistica" }]} />
 

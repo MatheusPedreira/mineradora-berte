@@ -160,7 +160,7 @@ function CityIndex() {
           ))}
         </ol>
 
-        <div className="mt-14 grid gap-8 border border-offwhite/20 p-6 sm:mt-16 sm:p-10 lg:grid-cols-12 lg:items-center lg:gap-8">
+        <div data-track-location="regions_cta" className="mt-14 grid gap-8 border border-offwhite/20 p-6 sm:mt-16 sm:p-10 lg:grid-cols-12 lg:items-center lg:gap-8">
           <div className="lg:col-span-6">
             <h3 className="text-2xl font-bold tracking-[-0.02em] sm:text-3xl">Sua obra fica em outra cidade?</h3>
             <p className="mt-3 max-w-md text-[0.9375rem] leading-relaxed text-offwhite/75">

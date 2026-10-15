@@ -10,7 +10,7 @@ const pillars = ["Basalto de alta qualidade", "Granulometria padronizada", "Cont
 
 export function Quality() {
   return (
-    <section aria-labelledby="qualidade-titulo" className="bg-stone py-20 sm:py-24 lg:py-32">
+    <section aria-labelledby="qualidade-titulo" data-track-location="quality" className="bg-stone py-20 sm:py-24 lg:py-32">
       <Container className="grid gap-12 lg:grid-cols-12 lg:gap-8">
         <div className="lg:col-span-5">
           <Eyebrow index="04">Qualidade dos materiais</Eyebrow>

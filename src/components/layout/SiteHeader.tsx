@@ -32,7 +32,7 @@ export function SiteHeader() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-offwhite">
+    <header data-track-location="header" className="sticky top-0 z-50 border-b border-line bg-offwhite">
       <div className="mx-auto flex h-18 w-full max-w-[1440px] items-center justify-between gap-6 px-4 sm:h-20 sm:px-8 lg:px-12">
         <Logo />
 
@@ -92,6 +92,7 @@ export function SiteHeader() {
 
       <div
         id="menu-mobile"
+        data-track-location="mobile_menu"
         hidden={!open}
         className="fixed inset-x-0 top-18 bottom-0 overflow-y-auto border-t border-line bg-offwhite sm:top-20 xl:hidden"
       >

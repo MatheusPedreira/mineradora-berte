@@ -1,6 +1,8 @@
 import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { ConsentPreferencesButton } from "@/components/analytics/ConsentPreferencesButton";
 import { company } from "@/content/company";
+import { gtmId } from "@/lib/analytics";
 import { pageMetadata } from "@/lib/site";
 
 export const metadata = pageMetadata({
@@ -57,10 +59,28 @@ export default function PrivacyPage() {
           </section>
           <section>
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-graphite">Ferramentas de análise</h2>
-            <p className="mt-3">
-              No momento, o site não utiliza ferramentas de análise de visitas nem pixels de anúncios. Caso venham a
-              ser adicionadas, esta política será atualizada antes da ativação.
-            </p>
+            {gtmId ? (
+              <>
+                <p className="mt-3">
+                  O site usa o Google Tag Manager para gerenciar ferramentas do Google: o Google Analytics 4
+                  (estatísticas de visitas) e o Google Ads (medição de anúncios). Elas só são carregadas depois da sua
+                  autorização no aviso de cookies, separada entre análise e publicidade. Se você recusar, nenhuma delas
+                  é carregada e o site funciona normalmente.
+                </p>
+                <p className="mt-3">
+                  Com a autorização, são registrados dados de navegação e ações como cliques em telefone ou WhatsApp e
+                  a abertura do pedido no WhatsApp. Nome, telefone digitado, endereço, observações e o texto da
+                  mensagem não são enviados a essas ferramentas. A sua escolha fica guardada no navegador para não ser
+                  perguntada a cada página.
+                </p>
+                <ConsentPreferencesButton className="mt-3 font-semibold text-navy underline underline-offset-4" />
+              </>
+            ) : (
+              <p className="mt-3">
+                No momento, o site não utiliza ferramentas de análise de visitas nem pixels de anúncios. Caso venham a
+                ser adicionadas, esta política será atualizada antes da ativação.
+              </p>
+            )}
           </section>
           <section>
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-graphite">Links externos</h2>

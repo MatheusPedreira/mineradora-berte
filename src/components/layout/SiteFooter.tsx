@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
+import { ConsentPreferencesButton } from "@/components/analytics/ConsentPreferencesButton";
 import { company } from "@/content/company";
 import { mainNav, quoteHref } from "@/content/navigation";
 import { products } from "@/content/products";
@@ -12,7 +13,7 @@ const linkClass = "link-underline text-offwhite/70 transition-colors hover:text-
 
 export function SiteFooter() {
   return (
-    <footer className="on-dark bg-graphite text-offwhite">
+    <footer data-track-location="footer" className="on-dark bg-graphite text-offwhite">
       <Container className="pt-16 pb-28 sm:pt-20 sm:pb-10">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-4">
@@ -69,11 +70,11 @@ export function SiteFooter() {
               href={whatsappDirectHref}
               target="_blank"
               rel="noopener noreferrer"
-              className={`mt-1 inline-block text-sm ${linkClass}`}
+              className="inline-flex min-h-11 items-center text-sm text-offwhite/70 transition-colors hover:text-offwhite"
             >
-              Falar no WhatsApp
+              <span className="link-underline">Falar no WhatsApp</span>
             </a>
-            <p className="mt-5 text-xs text-offwhite/60">Contato alternativo</p>
+            <p className="mt-3 text-xs text-offwhite/60">Contato alternativo</p>
             <a
               href={company.phoneSecondary.href}
               className="mt-1 block font-display text-2xl font-semibold tracking-tight tabular-nums transition-colors hover:text-sand"
@@ -84,9 +85,9 @@ export function SiteFooter() {
               href={whatsappSecondaryHref}
               target="_blank"
               rel="noopener noreferrer"
-              className={`mt-1 inline-block text-sm ${linkClass}`}
+              className="inline-flex min-h-11 items-center text-sm text-offwhite/70 transition-colors hover:text-offwhite"
             >
-              WhatsApp alternativo
+              <span className="link-underline">WhatsApp alternativo</span>
             </a>
             <p className="mt-6 text-sm leading-relaxed text-offwhite/70">
               {company.address.plusCode} — {company.address.city}, {company.address.state}
@@ -107,7 +108,10 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-16 flex flex-col gap-3 border-t border-line-dark pt-6 text-xs text-offwhite/60 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {company.name}. Todos os direitos reservados.</p>
+          <p>
+            © {company.name}. Todos os direitos reservados.
+            <ConsentPreferencesButton className="ml-4 underline underline-offset-4 hover:text-offwhite" />
+          </p>
           <p>
             {company.address.city} · {company.address.stateName} · Brasil
           </p>

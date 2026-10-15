@@ -62,7 +62,7 @@ const facts = [
 
 export function Hero() {
   return (
-    <section aria-labelledby="hero-titulo" className="relative border-b border-line">
+    <section aria-labelledby="hero-titulo" data-track-location="hero" className="relative border-b border-line">
       <Container className="grid lg:min-h-[min(calc(100svh-5rem),900px)] lg:grid-cols-12">
         <div className="flex flex-col justify-center pt-10 pb-10 sm:pt-16 sm:pb-12 lg:col-span-6 lg:py-20 lg:pr-12 xl:col-span-5">
           <p className="animate-rise text-[0.7rem] font-semibold tracking-eyebrow text-basalt uppercase sm:text-xs">

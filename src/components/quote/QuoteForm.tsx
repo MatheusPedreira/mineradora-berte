@@ -90,7 +90,9 @@ function Segmented<T extends string>({
         {options.map((opt) => (
           <label
             key={opt.value}
-            className="flex min-h-12 cursor-pointer items-center justify-center rounded-[2px] border border-ink/25 px-3 text-center text-sm font-semibold text-graphite transition-colors hover:border-ink/50 has-[:checked]:border-navy has-[:checked]:bg-navy has-[:checked]:text-offwhite has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-sand-deep"
+            className={`flex min-h-12 cursor-pointer items-center justify-center rounded-[2px] border px-3 ${
+              error ? "border-[#a3361f] bg-[#a3361f]/[0.04]" : "border-ink/25"
+            } text-center text-sm font-semibold text-graphite transition-colors hover:border-ink/50 has-[:checked]:border-navy has-[:checked]:bg-navy has-[:checked]:text-offwhite has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-sand-deep`}
           >
             <input
               type="radio"
@@ -137,7 +139,11 @@ export function QuoteForm({ initialProduct = "" }: { initialProduct?: string }) 
   function update<K extends keyof QuoteData>(key: K, value: QuoteData[K]) {
     if (!started.current) {
       started.current = true;
-      track("quote_form_start");
+      track("quote_form_start", {
+        form_name: "orcamento",
+        product_slug: data.material,
+        page_path: window.location.pathname,
+      });
     }
     setData((d) => ({ ...d, [key]: value }));
     setOpenedUrl(null);
@@ -157,8 +163,15 @@ export function QuoteForm({ initialProduct = "" }: { initialProduct?: string }) 
       return;
     }
     const url = whatsappQuoteUrl(data);
-    // Só o material e a modalidade: nenhum dado pessoal vai para a medição.
-    track("quote_whatsapp_open", { material: data.material, modalidade: data.modalidade });
+    // Só material, modalidade e unidade: nenhum dado pessoal vai para a medição.
+    track("quote_whatsapp_open", {
+      form_name: "orcamento",
+      product_slug: data.material,
+      supply_mode: data.modalidade,
+      quantity_unit: data.unidade,
+      contact_line: "principal",
+      page_path: window.location.pathname,
+    });
     window.open(url, "_blank", "noopener,noreferrer");
     setOpenedUrl(url);
   }
@@ -166,7 +179,7 @@ export function QuoteForm({ initialProduct = "" }: { initialProduct?: string }) 
   const summary = quoteLines(data);
 
   return (
-    <form noValidate onSubmit={handleSubmit} className="grid gap-10">
+    <form noValidate onSubmit={handleSubmit} data-track-location="quote_form" className="grid gap-10">
       <Step index="01" title="Material">
         <Field id={id("material")} label="Material desejado" error={errors.material}>
           <SelectWrap>

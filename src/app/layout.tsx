@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { MobileQuoteBar } from "@/components/layout/MobileQuoteBar";
 import { ConversionTracking } from "@/components/layout/ConversionTracking";
+import { ConsentManager } from "@/components/analytics/ConsentManager";
 import { JsonLd, localBusinessSchema } from "@/components/seo/JsonLd";
 import { company } from "@/content/company";
 import { isIndexable, siteUrl } from "@/lib/site";
@@ -32,6 +33,10 @@ export const metadata: Metadata = {
   applicationName: company.name,
   robots: isIndexable ? { index: true, follow: true } : { index: false, follow: false },
   formatDetection: { telephone: false },
+  // Verificação do Search Console por meta tag (opcional; alternativa ao registro DNS).
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
+    : {}),
   openGraph: {
     type: "website",
     locale: "pt_BR",
@@ -60,6 +65,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteFooter />
         <MobileQuoteBar />
         <ConversionTracking />
+        <ConsentManager />
         <JsonLd data={localBusinessSchema()} />
       </body>
     </html>
