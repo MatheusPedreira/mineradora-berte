@@ -29,7 +29,7 @@ export function Logistics() {
             src={media.logistics.src}
             alt={media.logistics.alt}
             slot={media.logistics.slot}
-            label="Fotografia real da frota"
+            label="Fotografia real da operação"
             sizes="(min-width: 1024px) 55vw, 100vw"
             className="aspect-[4/3] lg:aspect-auto lg:h-full lg:min-h-[640px]"
           />

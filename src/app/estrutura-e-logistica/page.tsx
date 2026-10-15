@@ -25,10 +25,10 @@ export default function LogisticsPage() {
 
       <Container className="py-16 sm:py-20 lg:py-24">
         <MediaSlot
-          src={media.logistics.src}
-          alt={media.logistics.alt}
-          slot={media.logistics.slot}
-          label="Fotografia real da frota"
+          src={media.structure.src}
+          alt={media.structure.alt}
+          slot={media.structure.slot}
+          label="Fotografia real da operação"
           sizes="100vw"
           className="aspect-[4/3] sm:aspect-[21/9]"
         />

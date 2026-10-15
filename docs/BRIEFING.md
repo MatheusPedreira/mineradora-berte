@@ -28,7 +28,8 @@ Status: **Etapa 01** (base do projeto + Home). Ambiente de desenvolvimento, sem 
 - [ ] **Canal do formulário de cotação** — e-mail, CRM ou serviço de envio. Até lá, `company.quoteEndpoint = null` e a página de contato mostra o roteiro do pedido, sem formulário enviável.
 - [ ] **Domínio oficial** — necessário para canonicals, sitemap e indexação.
 - [ ] **Logo em vetor (SVG/AI/PDF)** — os recortes atuais vêm de um PNG. Um vetor melhora a nitidez e permite versões oficiais (horizontal, negativa, monocromática).
-- [ ] **Fotografias reais** — ver seção 6.
+- [x] **Fotografias reais (lote 1)** — 6 fotos e 2 vídeos enviados pela empresa e confirmados como originais (15/10/2026). Ver seção 7.
+- [ ] **Fotos da frota de entrega** (truck, 6x4, bitruck, carretas) e **fotos de cada produto** — ainda não recebidas.
 - [ ] **Por produto**: descrição, especificações técnicas confirmadas, aplicações confirmadas e foto.
 - [ ] **Validação das categorias** — o catálogo foi agrupado pela família do nome (Britas e derivados, Areias, Rachões), sem presumir granulometria. Confirmar com a empresa.
 - [ ] **Documentos técnicos** (fichas, ensaios), se a empresa quiser publicá-los — entram em `technicalDocuments`.
@@ -100,3 +101,23 @@ Pastas em `public/images/`:
 | `brand/` | Logo e variações | Preferencialmente em SVG |
 
 Depois de salvar o arquivo, basta preencher `src` com o caminho (ex.: `"/images/hero/hero-desktop.jpg"`). Enquanto `src` for `null`, a área reservada continua aparecendo.
+
+## 7. Mídia recebida — lote 1 (15/10/2026)
+
+Originais (nomes do SaveClip) ficam em `public/images/` ignorados pelo Git e em `/Users/matheus/berte-midia-original/`. No site entram cópias renomeadas, sem metadados EXIF:
+
+| Arquivo no site | Original | Conteúdo | Onde aparece |
+| --- | --- | --- | --- |
+| `hero/pedreira-basalto.jpg` | `…465892585…` | Paredão de basalto, escavadeira e caminhão fora de estrada | Hero da Home (desktop e celular) |
+| `operations/vista-aerea-patio.jpg` | `…472340018…` | Vista aérea do pátio, usina, máquinas e estrada | Home — Estrutura e Logística |
+| `operations/usina-britagem.jpg` | `…472189487…` | Usina de britagem e pilhas | Home — Qualidade dos materiais |
+| `operations/usina-vista-superior.jpg` | `…472943541…` | Usina vista de cima | Página Estrutura e Logística |
+| `institutional/vista-aerea-operacao.jpg` | `…471725020…` | Vista aérea da operação | Página Sobre |
+| `src/app/opengraph-image.jpg` (1200×630) | `…472900061…` | Vista aérea do pátio | Imagem de compartilhamento (WhatsApp, redes, Google) |
+
+Vídeos (ainda fora do site):
+
+- **Peneira vibratória** (720×1280, 1min58s, 68 MB): bom para um loop curto e mudo (6–10 s, sem áudio, ~1–2 MB) ilustrando "Granulometria padronizada". Exige recorte e compressão.
+- **Drone sobre a usina** (638×360, 27 s): resolução baixa demais para destaque; pedir o arquivo original do drone em 1080p/4K.
+
+Fotos ainda necessárias: caminhões da frota de entrega (a seção de logística fala em frota própria, mas as fotos atuais mostram equipamentos de pátio) e um close de cada um dos 10 produtos.

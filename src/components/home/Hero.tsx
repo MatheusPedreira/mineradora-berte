@@ -16,17 +16,17 @@ function HeroMedia() {
     const common = { alt: desktop.alt, sizes: heroSizes, fetchPriority: "high" as const };
     const {
       props: { srcSet: desktopSet },
-    } = getImageProps({ ...common, src: desktop.src, width: 2400, height: 1600 });
+    } = getImageProps({ ...common, src: desktop.src, width: desktop.width ?? 2400, height: desktop.height ?? 1600 });
     const {
       props: { srcSet: mobileSet, ...rest },
-    } = getImageProps({ ...common, src: mobile.src, width: 1080, height: 1350 });
+    } = getImageProps({ ...common, src: mobile.src, width: mobile.width ?? 1080, height: mobile.height ?? 1350 });
 
     return (
-      <picture className="block aspect-[4/5] overflow-hidden bg-stone sm:aspect-[16/10] lg:aspect-auto lg:h-full">
+      <picture className="relative block aspect-[4/5] overflow-hidden bg-stone sm:aspect-[16/10] lg:aspect-auto lg:h-full">
         <source media="(min-width: 1024px)" srcSet={desktopSet} />
         <source srcSet={mobileSet} />
         {/* eslint-disable-next-line jsx-a11y/alt-text -- alt vem de getImageProps */}
-        <img {...rest} className="h-full w-full object-cover" />
+        <img {...rest} className="h-full w-full object-cover lg:absolute lg:inset-0" />
       </picture>
     );
   }
