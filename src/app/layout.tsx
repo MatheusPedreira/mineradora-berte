@@ -4,6 +4,7 @@ import Script from "next/script";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { MobileQuoteBar } from "@/components/layout/MobileQuoteBar";
+import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { ConversionTracking } from "@/components/layout/ConversionTracking";
 import { ConsentManager } from "@/components/analytics/ConsentManager";
 import { JsonLd, localBusinessSchema } from "@/components/seo/JsonLd";
@@ -73,6 +74,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </main>
         <SiteFooter />
         <MobileQuoteBar />
+        <FloatingWhatsApp />
         <ConversionTracking />
         <ConsentManager />
         <JsonLd data={localBusinessSchema()} />

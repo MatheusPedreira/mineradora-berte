@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { applyConsent, gtmId, noConsent, readConsent, saveConsent, type ConsentChoice } from "@/lib/analytics";
 
 /** Evento para reabrir as preferências (rodapé e Política de Privacidade). */
@@ -21,6 +21,20 @@ export function ConsentManager() {
   const [details, setDetails] = useState(false);
   const [draft, setDraft] = useState<ConsentChoice>(noConsent);
   const uid = useId();
+  const bannerRef = useRef<HTMLElement>(null);
+
+  // Altura do aviso aberto (+ folga) em --consent-ui: o botão flutuante do WhatsApp fica acima dele.
+  useEffect(() => {
+    const root = document.documentElement;
+    const node = bannerRef.current;
+    if (!open || !node) return;
+    const observer = new ResizeObserver(() => root.style.setProperty("--consent-ui", `${node.offsetHeight + 12}px`));
+    observer.observe(node);
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty("--consent-ui");
+    };
+  }, [open, details]);
 
   useEffect(() => {
     if (!gtmId) return;
@@ -50,6 +64,7 @@ export function ConsentManager() {
     <>
       {open ? (
         <section
+          ref={bannerRef}
           aria-labelledby={`${uid}-titulo`}
           data-consent-banner
           // Sobe com transform (não com `bottom`) quando a barra do celular aparece: sem layout shift.

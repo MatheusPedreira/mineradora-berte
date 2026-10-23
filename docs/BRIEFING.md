@@ -574,3 +574,10 @@ A Google tag e as tags de evento do GA4 **não** devem ter "Exigir consentimento
 - [ ] Configurar e publicar o GTM; validar consentimento no Tag Assistant, pings `gcs=G100` e DebugView.
 - [ ] **Revisão jurídica** do modo avançado (base legal dos sinais sem cookies) e da Política.
 - [ ] Google Ads: validar eventos e qualidade dos contatos antes de escolher conversões.
+
+## 17. Botão flutuante do WhatsApp (23/10/2026)
+
+- `src/components/layout/FloatingWhatsApp.tsx`: círculo verde oficial (`#25D366`) com o glifo do WhatsApp, canto inferior direito, em todas as páginas; leva ao WhatsApp principal com a mensagem padrão (`whatsappDirectHref`). Mesmo modelo usado no DD Desentope+.
+- Celular: aparece no topo da página e some quando a barra fixa (que já tem WhatsApp) surge — sem botão duplicado.
+- Com o aviso de consentimento aberto, sobe acima dele (`--consent-ui`, medido no `ConsentManager`), sem sobreposição.
+- Medição: `whatsapp_click` com `placement: floating_button` (listener existente).

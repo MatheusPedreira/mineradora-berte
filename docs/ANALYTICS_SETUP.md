@@ -91,7 +91,7 @@ Interface aprovada mantida: **Recusar · Aceitar · Personalizar preferências**
 | `quote_form_start` | primeira interação com o formulário | `form_name`, `product`, `page_path` |
 | `quote_whatsapp_open` | formulário **validado** tentou abrir o WhatsApp principal | `form_name`, `product`, `supply_mode`, `quantity_unit`, `contact_type`, `page_path` |
 
-- `contact_type`: `principal` | `secundario` (nunca o número). `placement`: `header`, `mobile_menu`, `hero`, `quality`, `final_cta`, `footer`, `mobile_bar`, `contact_aside`, `catalog`, `regions_cta`, `page_hero`, `quote_form`, `content`. `product`: slug do catálogo. `supply_mode`: `entrega` | `retirada`. `quantity_unit`: `tonelada` | `m3`. `form_name`: `orcamento`.
+- `contact_type`: `principal` | `secundario` (nunca o número). `placement`: `header`, `mobile_menu`, `hero`, `floating_button`, `quality`, `final_cta`, `footer`, `mobile_bar`, `contact_aside`, `catalog`, `regions_cta`, `page_hero`, `quote_form`, `content`. `product`: slug do catálogo. `supply_mode`: `entrega` | `retirada`. `quantity_unit`: `tonelada` | `m3`. `form_name`: `orcamento`.
 - **Nunca** entram: nome, telefone digitado, endereço, observações, texto ou URL da mensagem do WhatsApp, qualquer identificador pessoal.
 - Não existe `purchase`, `generate_lead` como pedido confirmado nem evento de "pedido recebido".
 
