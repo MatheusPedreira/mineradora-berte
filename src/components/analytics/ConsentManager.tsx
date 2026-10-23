@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Script from "next/script";
 import { useEffect, useId, useRef, useState } from "react";
-import { gtmId, initTagManager, updateConsent, type ConsentChoice } from "@/lib/analytics";
+import { clearConsentCookies, gtmId, initTagManager, updateConsent, type ConsentChoice } from "@/lib/analytics";
 
 /** Evento para reabrir as preferências (rodapé e Política de Privacidade). */
 export const CONSENT_OPEN_EVENT = "berte:consent-open";
@@ -81,6 +81,16 @@ export function ConsentManager() {
 
   function decide(next: ConsentChoice) {
     saveChoice(next);
+    const revoked = { analytics: !!choice?.analytics && !next.analytics, ads: !!choice?.ads && !next.ads };
+    if (revoked.analytics || revoked.ads) {
+      // Revogação: estados negados para o container atual, remoção dos cookies da finalidade
+      // e recarga, para que nenhuma tag já carregada continue ativa (na recarga, o container
+      // só volta se ainda houver alguma finalidade autorizada).
+      if (initialized.current) updateConsent(next);
+      clearConsentCookies(revoked);
+      window.location.reload();
+      return;
+    }
     setChoice(next);
     setOpen(false);
     setDetails(false);
@@ -95,7 +105,9 @@ export function ConsentManager() {
       {open ? (
         <section
           aria-labelledby={`${uid}-titulo`}
-          className="fixed inset-x-0 bottom-0 z-[45] border-t border-line bg-offwhite px-4 py-4 text-graphite sm:inset-x-auto sm:right-6 sm:bottom-6 sm:max-w-md sm:border sm:p-5 [html[data-quote-bar]_&]:bottom-[73px] sm:[html[data-quote-bar]_&]:bottom-6"
+          data-consent-banner
+          // Sobe com transform (não com `bottom`) quando a barra do celular aparece: sem layout shift.
+          className="fixed inset-x-0 bottom-0 z-[45] border-t border-line bg-offwhite px-4 py-4 text-graphite sm:inset-x-auto sm:right-6 sm:bottom-6 sm:max-w-md sm:border sm:p-5 [html[data-quote-bar]_&]:-translate-y-[73px] sm:[html[data-quote-bar]_&]:translate-y-0"
         >
           <h2 id={`${uid}-titulo`} className="text-sm font-semibold">
             Cookies de análise e publicidade
@@ -113,8 +125,8 @@ export function ConsentManager() {
               <legend className="sr-only">Escolha o que autorizar</legend>
               {(
                 [
-                  ["analytics", "Análise", "Estatísticas de visitas (Google Analytics)."],
-                  ["ads", "Publicidade", "Medição de anúncios (Google Ads)."],
+                  ["analytics", "Análise", "Estatísticas de visitas e cliques (Google Analytics)."],
+                  ["ads", "Publicidade", "Medição de anúncios do Google, quando houver campanhas ativas."],
                 ] as const
               ).map(([key, label, hint]) => (
                 <label key={key} className="flex cursor-pointer items-start gap-3 text-sm">
@@ -147,17 +159,9 @@ export function ConsentManager() {
                 onClick={() => decide(draft)}
                 className={`${buttonBase} flex-1 border border-ink/45 text-ink hover:border-ink`}
               >
-                Salvar
+                Salvar escolhas
               </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setDetails(true)}
-                className={`${buttonBase} flex-1 border border-ink/45 text-ink hover:border-ink`}
-              >
-                Preferências
-              </button>
-            )}
+            ) : null}
             <button
               type="button"
               onClick={() => decide({ analytics: true, ads: true })}
@@ -166,6 +170,15 @@ export function ConsentManager() {
               Aceitar
             </button>
           </div>
+          {details ? null : (
+            <button
+              type="button"
+              onClick={() => setDetails(true)}
+              className="mt-1 inline-flex min-h-11 items-center text-sm font-semibold text-navy underline underline-offset-4"
+            >
+              Personalizar preferências
+            </button>
+          )}
         </section>
       ) : null}
     </>

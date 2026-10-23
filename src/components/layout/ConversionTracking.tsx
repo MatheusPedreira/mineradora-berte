@@ -16,7 +16,7 @@ function contactLine(number: string): ContactLine {
 /**
  * Registra cliques em telefone, WhatsApp e orçamento de material em qualquer página
  * (ver src/lib/analytics.ts). Um único listener delegado: um evento por clique.
- * `link_location` vem do `data-track-location` mais próximo (hero, footer, mobile_bar...).
+ * `placement` vem do `data-track-location` mais próximo (hero, footer, mobile_bar...).
  */
 export function ConversionTracking() {
   useEffect(() => {
@@ -25,16 +25,16 @@ export function ConversionTracking() {
       if (!link) return;
       const href = link.getAttribute("href") ?? "";
       const base = {
-        link_location: link.closest<HTMLElement>("[data-track-location]")?.dataset.trackLocation ?? "content",
+        placement: link.closest<HTMLElement>("[data-track-location]")?.dataset.trackLocation ?? "content",
         page_path: window.location.pathname,
       };
       if (href.startsWith("tel:")) {
-        track("phone_click", { contact_line: contactLine(href), ...base });
+        track("phone_click", { contact_type: contactLine(href), ...base });
       } else if (/^https:\/\/wa\.me\/\d+/.test(href)) {
-        track("whatsapp_click", { contact_line: contactLine(href.match(/^https:\/\/wa\.me\/(\d+)/)![1]), ...base });
+        track("whatsapp_click", { contact_type: contactLine(href.match(/^https:\/\/wa\.me\/(\d+)/)![1]), ...base });
       } else if (href.startsWith(`${quoteHref}?produto=`)) {
         const slug = new URLSearchParams(href.split("?")[1]).get("produto") ?? "";
-        track("product_quote_click", { product_slug: slug, ...base });
+        track("product_quote_click", { product: slug, ...base });
       }
     }
     document.addEventListener("click", onClick);

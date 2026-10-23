@@ -62,7 +62,7 @@ export function SiteFooter() {
             <h2 className="text-xs font-semibold tracking-eyebrow text-sand uppercase">Contato</h2>
             <a
               href={company.phone.href}
-              className="mt-5 block font-display text-2xl font-semibold tracking-tight tabular-nums transition-colors hover:text-sand"
+              className="mt-3 flex min-h-12 items-center font-display text-2xl font-semibold tracking-tight tabular-nums transition-colors hover:text-sand"
             >
               {company.phone.display}
             </a>
@@ -77,7 +77,7 @@ export function SiteFooter() {
             <p className="mt-3 text-xs text-offwhite/60">Contato alternativo</p>
             <a
               href={company.phoneSecondary.href}
-              className="mt-1 block font-display text-2xl font-semibold tracking-tight tabular-nums transition-colors hover:text-sand"
+              className="flex min-h-12 items-center font-display text-2xl font-semibold tracking-tight tabular-nums transition-colors hover:text-sand"
             >
               {company.phoneSecondary.display}
             </a>
@@ -98,7 +98,7 @@ export function SiteFooter() {
               href={company.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-offwhite transition-colors hover:text-sand"
+              className="mt-2 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-offwhite transition-colors hover:text-sand"
             >
               Abrir no Google Maps
               <ArrowUpRight aria-hidden="true" className="size-4" strokeWidth={1.75} />
@@ -110,7 +110,7 @@ export function SiteFooter() {
         <div className="mt-16 flex flex-col gap-3 border-t border-line-dark pt-6 text-xs text-offwhite/60 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {company.name}. Todos os direitos reservados.
-            <ConsentPreferencesButton className="ml-4 underline underline-offset-4 hover:text-offwhite" />
+            <ConsentPreferencesButton className="inline-flex sm:ml-4 min-h-11 items-center underline underline-offset-4 hover:text-offwhite" />
           </p>
           <p>
             {company.address.city} · {company.address.stateName} · Brasil

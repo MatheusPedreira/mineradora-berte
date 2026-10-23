@@ -1,6 +1,6 @@
 # Mineradora Berté — Briefing do site
 
-Status: **Etapa 06** concluída (fotografias reais de 8 dos 10 materiais no catálogo e na Home — ver seção 14). Mensuração (Etapa 05B) segue desativada até receber os IDs reais — ver `docs/ANALYTICS_SETUP.md`. Domínio oficial em uso como ambiente de testes, `noindex`.
+Status: **Etapa 07** concluída (GTM `GTM-WQZ8BXHF` integrado com Consent Mode v2 básico; GA4 `G-LRVXNPM6ZG` a configurar dentro do GTM — ver seção 15 e `docs/ANALYTICS_SETUP.md`). Fotos de 8 dos 10 materiais (seção 14). Domínio oficial em uso como ambiente de testes, `noindex`.
 
 ---
 
@@ -516,3 +516,34 @@ Areia industrial (Nº 06) e Rachão mataco (Nº 10) continuam com o painel numer
 - [ ] Definir o destino de `bgs.jpeg` (BGS).
 - [ ] Foto original do Rachão mina em resolução maior.
 - [ ] Fotos de Areia industrial e Rachão mataco.
+
+## 15. Etapa 07 — GTM, GA4 e consentimento (23/10/2026)
+
+Detalhes técnicos, configuração do painel e testes: **`docs/ANALYTICS_SETUP.md`**.
+
+### Implementado
+
+- `NEXT_PUBLIC_GTM_ID=GTM-WQZ8BXHF` em `.env.production` (versionado, ID público; liberado no `.gitignore`). Variável na Vercel tem precedência. Sem ela, nada carrega.
+- Arquitetura da Etapa 05B mantida (sem nova biblioteca): o container só é baixado após autorização de análise e/ou publicidade, com `consent default` negado → `update` → `gtm.js`. O GA4 **não** está no código; será a Google tag dentro do GTM.
+- Aviso: **Recusar · Aceitar · Personalizar preferências** (Análise / Publicidade, desmarcadas). "Preferências de privacidade" no rodapé e na Política (antes: "Preferências de cookies").
+- Revogação: estados negados, remoção de `_ga*`/`_gcl_*` e recarga — o container não continua ativo.
+- Eventos com parâmetros padronizados: `product`, `placement`, `contact_type`, `supply_mode`, `quantity_unit`, `form_name`, `page_path`. Removido o evento reservado `quote_submitted`. Nenhum evento representa venda.
+- Política de Privacidade reescrita para as ferramentas realmente ativas (GTM + GA4; publicidade **não** ativa; cookies `_ga`; Google como provedor; como recusar e revisar). Data: 23/10/2026. **Requer revisão jurídica antes do lançamento.**
+
+### Correções
+
+- **Rodapé (celular):** telefones com 48 px de altura de toque; WhatsApp, Google Maps e "Preferências de privacidade" com 44 px.
+- **Formulário — Unidade e Modalidade:** com erro, a legenda fica vermelha, as opções ganham borda de 2 px e a mensagem tem ícone; ao enviar, a página rola até o grupo (antes o foco ia para o rádio oculto, sem mostrar onde estava o erro).
+- **Aviso no celular:** sobe com `transform` quando a barra fixa aparece (antes mudava `bottom`, gerando CLS de até 0,43 em /produtos; agora 0).
+- **Barra fixa do celular:** em 360 px o botão WhatsApp passava 9 px da borda da tela; o "Solicitar orçamento" da barra ficou sem a seta para os dois caberem.
+
+### Situação do container
+
+`GTM-WQZ8BXHF` publicado (versão 1) **sem nenhuma tag**. Até a Google tag ser criada e publicada, o GA4 não recebe dados.
+
+### Pendências
+
+- [ ] Configurar o GTM (variáveis, Google tag com consentimento adicional `analytics_storage`, acionadores e tags de evento) e testar no Tag Assistant/DebugView — `ANALYTICS_SETUP.md` seções 4 e 6.
+- [ ] Revisão jurídica da Política e do aviso.
+- [ ] Google Ads (conta, estratégia de conversões, Conversion Linker) — etapa futura.
+- [ ] Decisão sobre o `robots.txt` (`Disallow: /` + `noindex`) — ver `ANALYTICS_SETUP.md` seção 9.

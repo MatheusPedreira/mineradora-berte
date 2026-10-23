@@ -13,9 +13,11 @@
  * - product_quote_click: "Solicitar orçamento" de um material no catálogo
  * - quote_form_start: primeira interação com o formulário de orçamento
  * - quote_whatsapp_open: formulário validado tentou abrir o WhatsApp com a mensagem pronta.
- *   Não é mensagem enviada, orçamento recebido nem venda.
- * - quote_submitted: reservado para um pedido recebido de fato (exige backend com
- *   confirmação real). Não é disparado em nenhum ponto do site.
+ *   Não é mensagem enviada, orçamento recebido nem venda. Sem confirmação real de envio,
+ *   não existe evento de pedido recebido.
+ *
+ * Parâmetros: page_path, product (slug do catálogo), placement (onde fica o link),
+ * contact_type (principal/secundario), supply_mode e quantity_unit.
  */
 
 /** ID do container. Valores fora do formato oficial são ignorados (nenhum script é carregado). */
@@ -27,19 +29,18 @@ export const gtmId: string | null = /^GTM-[A-Z0-9]{4,}$/.test(process.env.NEXT_P
 export type ContactLine = "principal" | "secundario";
 
 type EventParams = {
-  phone_click: { contact_line: ContactLine; link_location: string; page_path: string };
-  whatsapp_click: { contact_line: ContactLine; link_location: string; page_path: string };
-  product_quote_click: { product_slug: string; link_location: string; page_path: string };
-  quote_form_start: { form_name: "orcamento"; product_slug: string; page_path: string };
+  phone_click: { contact_type: ContactLine; placement: string; page_path: string };
+  whatsapp_click: { contact_type: ContactLine; placement: string; page_path: string };
+  product_quote_click: { product: string; placement: string; page_path: string };
+  quote_form_start: { form_name: "orcamento"; product: string; page_path: string };
   quote_whatsapp_open: {
     form_name: "orcamento";
-    product_slug: string;
+    product: string;
     supply_mode: string;
     quantity_unit: string;
-    contact_line: "principal";
+    contact_type: "principal";
     page_path: string;
   };
-  quote_submitted: { form_name: "orcamento" };
 };
 
 export type AnalyticsEvent = keyof EventParams;
@@ -92,4 +93,21 @@ export function initTagManager(choice: ConsentChoice) {
 /** Alteração posterior das preferências, com o container já carregado. */
 export function updateConsent(choice: ConsentChoice) {
   gtag("consent", "update", consentState(choice));
+}
+
+/** Cookies do Google gravados com autorização: GA4 (`_ga`, `_ga_<ID>`) e Ads (`_gcl_*`). */
+const consentCookies = { analytics: /^_ga(_|$)/, ads: /^_gcl_/ };
+
+/** Remove os cookies da finalidade revogada (no host e no domínio raiz, onde o GA4 os grava). */
+export function clearConsentCookies(revoked: ConsentChoice) {
+  const host = window.location.hostname;
+  const domains = [host, host.replace(/^www\./, "")].map((d) => `; domain=.${d}`);
+  for (const cookie of document.cookie.split(";")) {
+    const name = cookie.split("=")[0].trim();
+    const match = (revoked.analytics && consentCookies.analytics.test(name)) || (revoked.ads && consentCookies.ads.test(name));
+    if (!match) continue;
+    for (const domain of ["", ...domains]) {
+      document.cookie = `${name}=; max-age=0; path=/${domain}`;
+    }
+  }
 }

@@ -41,7 +41,8 @@ export function MobileQuoteBar() {
         visible ? "translate-y-0" : "translate-y-full"
       }`}
     >
-      <ButtonLink href={quoteHref} className="flex-1">
+      {/* Sem seta: em 360px os dois botões precisam caber na largura da tela. */}
+      <ButtonLink href={quoteHref} icon="none" className="flex-1">
         Solicitar orçamento
       </ButtonLink>
       <a

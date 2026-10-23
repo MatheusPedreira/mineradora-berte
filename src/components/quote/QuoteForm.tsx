@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown, CircleAlert } from "lucide-react";
 import { cities, company } from "@/content/company";
 import { getProductsByCategory, productCategories } from "@/content/products";
 import {
@@ -84,14 +84,14 @@ function Segmented<T extends string>({
   onChange: (value: T) => void;
 }) {
   return (
-    <fieldset aria-describedby={error ? `${name}-erro` : undefined}>
-      <legend className="text-sm font-semibold text-graphite">{legend}</legend>
+    <fieldset aria-describedby={error ? `${name}-erro` : undefined} data-field={name}>
+      <legend className={`text-sm font-semibold ${error ? "text-[#a3361f]" : "text-graphite"}`}>{legend}</legend>
       <div className="mt-2 grid grid-cols-2 gap-2">
         {options.map((opt) => (
           <label
             key={opt.value}
-            className={`flex min-h-12 cursor-pointer items-center justify-center rounded-[2px] border px-3 ${
-              error ? "border-[#a3361f] bg-[#a3361f]/[0.04]" : "border-ink/25"
+            className={`relative flex min-h-12 cursor-pointer items-center justify-center rounded-[2px] border px-3 ${
+              error ? "border-2 border-[#a3361f] bg-[#a3361f]/[0.06]" : "border-ink/25"
             } text-center text-sm font-semibold text-graphite transition-colors hover:border-ink/50 has-[:checked]:border-navy has-[:checked]:bg-navy has-[:checked]:text-offwhite has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-sand-deep`}
           >
             <input
@@ -107,7 +107,8 @@ function Segmented<T extends string>({
         ))}
       </div>
       {error ? (
-        <p id={`${name}-erro`} className="mt-2 text-sm font-medium text-[#a3361f]">
+        <p id={`${name}-erro`} className="mt-2 flex items-center gap-1.5 text-sm font-medium text-[#a3361f]">
+          <CircleAlert aria-hidden="true" className="size-4 shrink-0" strokeWidth={2} />
           {error}
         </p>
       ) : null}
@@ -141,7 +142,7 @@ export function QuoteForm({ initialProduct = "" }: { initialProduct?: string }) 
       started.current = true;
       track("quote_form_start", {
         form_name: "orcamento",
-        product_slug: data.material,
+        product: data.material,
         page_path: window.location.pathname,
       });
     }
@@ -159,17 +160,20 @@ export function QuoteForm({ initialProduct = "" }: { initialProduct?: string }) 
     setErrors(found);
     const first = Object.keys(found)[0];
     if (first) {
-      e.currentTarget.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
+      const field = e.currentTarget.querySelector<HTMLElement>(`[name="${first}"]`);
+      // Rádios são visualmente ocultos: rola até o grupo inteiro (legenda, opções e erro).
+      field?.closest("[data-field]")?.scrollIntoView({ block: "center" });
+      field?.focus({ preventScroll: !!field.closest("[data-field]") });
       return;
     }
     const url = whatsappQuoteUrl(data);
     // Só material, modalidade e unidade: nenhum dado pessoal vai para a medição.
     track("quote_whatsapp_open", {
       form_name: "orcamento",
-      product_slug: data.material,
+      product: data.material,
       supply_mode: data.modalidade,
       quantity_unit: data.unidade,
-      contact_line: "principal",
+      contact_type: "principal",
       page_path: window.location.pathname,
     });
     window.open(url, "_blank", "noopener,noreferrer");
