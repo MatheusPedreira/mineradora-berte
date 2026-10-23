@@ -1,6 +1,6 @@
-# Mineradora Berté — Mensuração (GTM, GA4, consentimento)
+# Mineradora Berté — Mensuração (GTM, GA4, Consent Mode v2 avançado)
 
-Situação em 23/10/2026 (Etapa 07): **GTM integrado no site, condicionado ao consentimento.** O container `GTM-WQZ8BXHF` está publicado (versão 1) mas **vazio** — nenhuma tag, acionador ou variável. Portanto o **GA4 ainda não coleta dados**: a Google tag precisa ser criada e publicada no painel (seção 4). Nenhuma tag do Google Ads existe.
+Situação em 23/10/2026 (Etapa 08): **Consent Mode v2 AVANÇADO no site.** O container `GTM-WQZ8BXHF` carrega em todas as páginas, com todos os estados de consentimento negados por padrão. O container está publicado (versão 1) mas **vazio** — nenhuma tag, acionador ou variável. Portanto o **GA4 não recebe nada** (nem hits com cookies, nem pings sem cookies) até a Google tag ser criada e publicada no painel (seção 5). Nenhuma tag do Google Ads existe.
 
 ---
 
@@ -8,187 +8,200 @@ Situação em 23/10/2026 (Etapa 07): **GTM integrado no site, condicionado ao co
 
 | Item | Valor | Onde fica |
 | --- | --- | --- |
-| Google Tag Manager | `GTM-WQZ8BXHF` | `NEXT_PUBLIC_GTM_ID` em `.env.production` (versionado; é um ID público). Uma variável com o mesmo nome no painel da Vercel tem precedência. |
-| GA4 Measurement ID | `G-LRVXNPM6ZG` | **Somente dentro do GTM** (Google tag). Não aparece no código do site. |
-| Google Ads | — | Não instalado. Ver seção 8. |
+| Google Tag Manager | `GTM-WQZ8BXHF` | `NEXT_PUBLIC_GTM_ID` em `.env.production` (versionado; ID público). Variável com o mesmo nome no painel da Vercel tem precedência. |
+| GA4 Measurement ID | `G-LRVXNPM6ZG` | **Somente dentro do GTM** (Google tag). Não aparece no código. |
+| Google Ads | — | Não instalado (seção 8). |
 
-Sem `NEXT_PUBLIC_GTM_ID` (ou com valor fora do formato `GTM-…`), o site não carrega o container, não mostra o aviso e não cria `window.dataLayer`. Para desativar: apagar a linha do `.env.production` (ou definir a variável vazia na Vercel) e fazer deploy — a variável é lida no build.
+Sem `NEXT_PUBLIC_GTM_ID` válido (formato `GTM-…`), o site não carrega o container, não mostra o aviso e não cria `window.dataLayer`. A variável é lida no build.
 
 ---
 
-## 2. Arquitetura
+## 2. Básico × avançado — o que mudou
 
-Nenhuma biblioteca extra: `next/script` + camada de dados própria.
+| | Básico (Etapa 07) | **Avançado (Etapa 08, atual)** |
+| --- | --- | --- |
+| Carregamento do GTM | só depois de "Aceitar"/escolha com alguma finalidade | **em toda página, desde o início** |
+| Sem consentimento | nenhuma requisição ao Google | tags do Google compatíveis podem enviar **pings sem cookies** |
+| `dataLayer` sem consentimento | inexistente; eventos descartados | existe; **eventos sempre registrados** |
+| Revogação | `update` negado + apagar cookies + **recarregar** | `update` negado + apagar cookies, **sem recarregar** |
 
-| Arquivo | Função |
-| --- | --- |
-| `src/lib/analytics.ts` | ID do container, tipos e envio dos eventos (`track`), comandos de consentimento, limpeza de cookies |
-| `src/components/analytics/ConsentManager.tsx` | Aviso de consentimento + carregamento do container (uma única `<Script id="gtm">`, no layout raiz) |
-| `src/components/analytics/ConsentPreferencesButton.tsx` | "Preferências de privacidade" (rodapé e Política) |
-| `src/components/layout/ConversionTracking.tsx` | Um listener de clique delegado: `tel:`, `wa.me` e orçamento do catálogo |
-| `src/components/quote/QuoteForm.tsx` | `quote_form_start` e `quote_whatsapp_open` |
+**Por que antes só carregava após consentimento:** na Etapa 07, `ConsentManager` só chamava `initTagManager()` e renderizava `<Script src="…gtm.js">` quando a escolha salva tinha `analytics` ou `ads` = `true`; sem isso, `window.dataLayer` nem era criado e `track()` retornava sem registrar. Esse caminho foi removido.
 
-### Consent Mode v2 **básico**
+---
 
-- Antes da autorização: o GTM **não é baixado**, `window.dataLayer` não existe, `track()` não faz nada. Nenhuma requisição ao Google, nenhum cookie.
-- Ao autorizar (análise e/ou publicidade), nesta ordem:
+## 3. Como funciona
+
+### Ordem de inicialização (script inline `beforeInteractive` no `src/app/layout.tsx`, gerado por `gtmBootstrapScript` em `src/lib/analytics.ts`)
+
+Roda **uma vez por carga de página**, antes da hidratação do Next.js e antes de qualquer tag:
 
 ```js
-gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' })
-gtag('set', 'ads_data_redaction', true)
-gtag('consent', 'update', { /* conforme a escolha */ })
-dataLayer.push({ 'gtm.start': <timestamp>, event: 'gtm.js' })
-// só então: <script src="https://www.googletagmanager.com/gtm.js?id=GTM-WQZ8BXHF">
+window.dataLayer = window.dataLayer || []                                   // 1. dataLayer
+gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied',
+                             ad_user_data: 'denied', ad_personalization: 'denied' })  // 2. padrão negado
+gtag('set', 'ads_data_redaction', true)                                     // 3. privacidade
+gtag('consent', 'update', { ...escolha salva })   // 3b. só se houver escolha salva com algo concedido
+dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' })
+// 4. <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-WQZ8BXHF" data-gtm-container>
+//    inserido uma única vez (verifica se já existe)
 ```
 
-- Mapeamento: **Análise** → `analytics_storage`; **Publicidade** → `ad_storage`, `ad_user_data`, `ad_personalization`.
-- Mais autorização depois (ex.: Recusar → Aceitar): `consent update` e carga do container, sem recarregar.
-- **Revogação** (qualquer finalidade passa de concedida para negada): `consent update` negado, remoção dos cookies da finalidade (`_ga`, `_ga_*` para análise; `_gcl_*` para publicidade, no host e no domínio raiz) e **recarga da página**. Na recarga, o container só volta se ainda houver alguma finalidade autorizada — assim nenhuma tag já carregada continua enviando dados.
-- Escolha guardada em `localStorage` (`berte-consent-v1`: `analytics`, `ads`, `updatedAt`). Nada mais é armazenado pelo site.
-- Nenhum HTML personalizado no GTM manipula consentimento: o estado é definido pelo site, antes do container.
+5. Quando o visitante escolhe (aviso ou "Preferências de privacidade"): `gtag('consent', 'update', …)` **imediato**, sem recarregar e sem novo container (`applyConsent`).
+
+Detalhes:
+
+- O padrão é síncrono e vem antes do `gtm.js` (que é inserido pelo próprio script): nenhuma tag executa antes do estado negado.
+- Navegação interna (client-side) não reexecuta o script: um container por sessão de página.
+- Não há `<noscript>` do GTM: sem JavaScript não seria possível definir o consentimento padrão antes das tags.
+- Nenhum HTML personalizado no GTM manipula consentimento; o estado vem do site, pela API `gtag('consent', …)`.
+- Não usamos `wait_for_update`: a escolha salva é aplicada de forma síncrona antes do container; um visitante novo começa negado.
+
+### Estados
+
+| Escolha | `analytics_storage` | `ad_storage` | `ad_user_data` | `ad_personalization` |
+| --- | --- | --- | --- | --- |
+| Sem resposta / Recusar | denied | denied | denied | denied |
+| Aceitar | granted | granted | granted | granted |
+| Personalizar: só Análise | granted | denied | denied | denied |
+| Personalizar: só Publicidade | denied | granted | granted | granted |
+
+Nada é concedido automaticamente. A escolha fica em `localStorage` (`berte-consent-v1`: `analytics`, `ads`, `updatedAt`); só `true` explícito concede.
+
+### Revogação
+
+`consent update` com os estados negados (as tags do Google param de usar cookies imediatamente) e remoção dos cookies já gravados da finalidade revogada — análise: `_ga`, `_ga_*`, `_gid`, `_gat*`; publicidade: `_gcl_*`, `_gac_*` (no host e no domínio raiz). Sem recarga: o container continua, agora no modo sem cookies.
 
 ### Aviso
 
-Compacto, paleta da marca (navy `#29375F`, basalto `#5B626D`). **Recusar** · **Aceitar** · **Personalizar preferências** (Análise e Publicidade separadas, **desmarcadas**) → **Salvar escolhas**. No celular fica acima da barra fixa "Solicitar orçamento / WhatsApp" (sobe com `transform`, sem layout shift) e não cobre o cabeçalho; no desktop, canto inferior direito. O site funciona normalmente com o aviso aberto ou recusado.
-
-### Scripts carregados
-
-| Situação | Scripts do Google |
-| --- | --- |
-| Primeira visita (sem escolha) | nenhum |
-| Recusou | nenhum |
-| Autorizou análise e/ou publicidade | `gtm.js?id=GTM-WQZ8BXHF`, **uma vez**; o restante depende das tags publicadas no container |
-| Revogou tudo | nenhum (após a recarga) |
+Interface aprovada mantida: **Recusar · Aceitar · Personalizar preferências** (Análise / Publicidade desmarcadas) → **Salvar escolhas**. Não é modal: navegar, ligar, abrir o WhatsApp, usar o formulário e o catálogo funcionam sem responder. No celular fica acima da barra fixa (sobe com `transform`, CLS 0). Texto: "Com a sua autorização, usamos cookies para medir visitas e anúncios. Sem ela, o Google recebe só sinais limitados, sem cookies."
 
 ---
 
-## 3. Camada de dados — eventos
+## 4. Eventos e o que cada camada significa
 
-`dataLayer.push({ event, ...parâmetros })`, um push por interação real. Nenhum dado pessoal: nome, telefone digitado, endereço, observações e texto/URL da mensagem do WhatsApp **nunca** entram no `dataLayer`.
+### Camada de dados (site)
+
+`dataLayer.push({ event, ...parâmetros })`, um push por interação real, **com ou sem consentimento**:
 
 | Evento | Quando | Parâmetros |
 | --- | --- | --- |
 | `phone_click` | clique em link `tel:` da empresa | `contact_type`, `placement`, `page_path` |
 | `whatsapp_click` | clique em link direto `wa.me` da empresa | `contact_type`, `placement`, `page_path` |
 | `product_quote_click` | "Solicitar orçamento" de um material no catálogo | `product`, `placement`, `page_path` |
-| `quote_form_start` | primeira interação com o formulário (uma vez por carregamento do formulário) | `form_name`, `product` (pré-selecionado ou vazio), `page_path` |
+| `quote_form_start` | primeira interação com o formulário | `form_name`, `product`, `page_path` |
 | `quote_whatsapp_open` | formulário **validado** tentou abrir o WhatsApp principal | `form_name`, `product`, `supply_mode`, `quantity_unit`, `contact_type`, `page_path` |
 
-Valores:
+- `contact_type`: `principal` | `secundario` (nunca o número). `placement`: `header`, `mobile_menu`, `hero`, `quality`, `final_cta`, `footer`, `mobile_bar`, `contact_aside`, `catalog`, `regions_cta`, `page_hero`, `quote_form`, `content`. `product`: slug do catálogo. `supply_mode`: `entrega` | `retirada`. `quantity_unit`: `tonelada` | `m3`. `form_name`: `orcamento`.
+- **Nunca** entram: nome, telefone digitado, endereço, observações, texto ou URL da mensagem do WhatsApp, qualquer identificador pessoal.
+- Não existe `purchase`, `generate_lead` como pedido confirmado nem evento de "pedido recebido".
 
-- `contact_type`: `principal` ((49) 98409-3337) ou `secundario` ((49) 99180-1200) — a função, nunca o número.
-- `placement`: `header`, `mobile_menu`, `hero`, `quality`, `final_cta`, `footer`, `mobile_bar`, `contact_aside`, `catalog`, `regions_cta`, `page_hero`, `quote_form` ou `content`.
-- `product`: `brita-1`, `pedrisco`, `po-de-brita`, `brita-2`, `bica-corrida`, `areia-industrial`, `areia-natural`, `rachaozinho-primario`, `rachao-mina`, `rachao-mataco`.
-- `supply_mode`: `entrega` | `retirada`. `quantity_unit`: `tonelada` | `m3`. `form_name`: `orcamento`.
+### Não confundir
 
-**Nenhum evento é venda ou pedido recebido.** `quote_whatsapp_open` = o visitante validou o formulário e tentou abrir o WhatsApp; a mensagem pode não ter sido enviada. Não existem (e não devem ser criados) `purchase`, `generate_lead` como confirmação de pedido ou `quote_submit_success` — sem backend com confirmação real, não há evento de pedido recebido.
+| Camada | O que é | Onde se vê |
+| --- | --- | --- |
+| Evento no `dataLayer` | o site registrou a interação no navegador | `window.dataLayer`, Tag Assistant (aba *Data Layer*) |
+| Ping sem cookies | a tag do Google enviou um sinal limitado, sem identificador, porque o consentimento está negado | Network: `…/g/collect` com `gcs=G100` (ou similar) e sem `_ga` |
+| Hit com cookies | consentimento de análise concedido; a tag usa `_ga` | Network: `gcs=G1…1`; cookies `_ga` |
+| Evento no GA4 | o GA4 recebeu e processou | DebugView / Tempo real (pings sem cookies **não** aparecem como usuários no DebugView) |
+| Conversão no Google Ads | atribuída a um clique de anúncio, ou **modelada** | Google Ads (não configurado) |
+| Mensagem enviada / venda | fora do site | WhatsApp / CRM |
 
-Os parâmetros foram renomeados na Etapa 07 (`product_slug` → `product`, `link_location` → `placement`, `contact_line` → `contact_type`) e o evento reservado `quote_submitted` foi removido. Como o container estava vazio, nada configurado foi afetado.
+`quote_whatsapp_open` = formulário válido + tentativa de abrir o WhatsApp. **Não** é mensagem enviada. `phone_click` não é ligação concluída, nem venda.
 
 ---
 
-## 4. Configuração manual no GTM (pendente)
+## 5. Configuração manual no GTM (pendente)
 
 1. **Admin → Configurações do container → Ativar visão geral do consentimento.**
-2. **Variáveis → Variáveis da camada de dados** (versão 2), cada uma com o nome igual à chave: `page_path`, `product`, `placement`, `contact_type`, `supply_mode`, `quantity_unit`, `form_name`. (Prefixo sugerido no nome da variável: `DLV - product` etc.)
-3. **Tag "GA4 - Google tag"**: tipo *Google tag*, ID `G-LRVXNPM6ZG`, acionador **Initialization – All Pages**. Em *Configurações avançadas → Configurações de consentimento*: **Exigir consentimento adicional → `analytics_storage`**. ⚠️ Obrigatório: o container também carrega quando o visitante autoriza só Publicidade; sem essa exigência a Google tag executaria com análise negada (pings sem cookies), o que contraria o modo básico.
-4. **Acionadores** (*Evento personalizado*, "Todos os eventos personalizados"), um por evento, com o nome exato: `phone_click`, `whatsapp_click`, `product_quote_click`, `quote_form_start`, `quote_whatsapp_open`. (Alternativa: um único acionador com regex `^(phone_click|whatsapp_click|product_quote_click|quote_form_start|quote_whatsapp_open)$` e nome do evento `{{Event}}`.)
-5. **Tags "GA4 - <evento>"**: tipo *Google Analytics: evento do GA4*, ID de medição `G-LRVXNPM6ZG`, nome do evento = nome do acionador, parâmetros do evento conforme a seção 3 (ex.: `product` = `{{DLV - product}}`). Consentimento adicional: `analytics_storage`.
-6. **Não criar**: tag de `page_view` manual, acionador *Alteração no histórico* para page_view, HTML personalizado de consentimento, tags do Google Ads (nesta etapa).
-7. **Visualizar** (Tag Assistant) e testar (seção 6) → só então **Enviar/Publicar** a versão.
+2. **Variáveis da camada de dados** (versão 2), nome da chave igual ao parâmetro: `page_path`, `product`, `placement`, `contact_type`, `supply_mode`, `quantity_unit`, `form_name`.
+3. **Tag "GA4 - Google tag"**: tipo *Google tag*, ID `G-LRVXNPM6ZG`, acionador **Initialization – All Pages**. Não é preciso tag no acionador *Consent Initialization*: o padrão negado já vem do site, antes do container. Configurações de consentimento: **"Não é necessário consentimento adicional"**. A Google tag tem verificações **incorporadas** (`analytics_storage`, `ad_storage`…) e se adapta sozinha — com estado negado envia pings sem cookies. ⚠️ **Não** marcar "Exigir consentimento adicional → `analytics_storage`" (isso bloquearia os pings do modo avançado).
+4. **Acionadores** *Evento personalizado* com o nome exato de cada evento: `phone_click`, `whatsapp_click`, `product_quote_click`, `quote_form_start`, `quote_whatsapp_open`.
+5. **Tags "GA4 - <evento>"**: tipo *Google Analytics: evento do GA4*, ID de medição `G-LRVXNPM6ZG`, nome do evento = acionador, parâmetros da seção 4 (ex.: `product` = `{{DLV - product}}`). Também **sem** consentimento adicional.
+6. **Não criar**: tag de `page_view` manual, acionador *Alteração no histórico* para page_view, HTML personalizado de consentimento, segunda Google tag, tags do Google Ads (nesta etapa), tags de terceiros sem consentimento (se no futuro houver, exigir consentimento adicional nelas, pois não têm o modo sem cookies).
+7. **Visualizar** (Tag Assistant), testar (seção 7) e só então publicar.
 
-### GA4 (propriedade `G-LRVXNPM6ZG`)
+### GA4 (`G-LRVXNPM6ZG`)
 
-- Fluxo de dados Web `https://www.mineradoraberte.com.br`; **Medição otimizada** ativa com *Visualizações de página → alterações de página baseadas em eventos do histórico do navegador* **ligada**.
-- Dimensões personalizadas (escopo de evento): `product`, `placement`, `contact_type`, `supply_mode`, `quantity_unit`, `form_name`. (`page_path` já é coberto pelas dimensões padrão; enviar como parâmetro é opcional.)
-- Não marcar como evento-chave o evento automático `click` (cliques de saída): `whatsapp_click` já mede o WhatsApp. Eventos-chave só após aprovação da estratégia (seção 8).
-- Retenção de dados conforme a política aprovada; fuso America/Sao_Paulo, moeda BRL.
-
----
-
-## 5. page_view e navegação do Next.js
-
-- O site **não envia `page_view` próprio**. A Google tag envia o do carregamento e a medição otimizada envia os das navegações internas.
-- Teste (23/10/2026, build de produção): cada navegação client-side gera **exatamente um `history.pushState` com mudança de URL** e nenhum `replaceState` na mesma URL — Home → Produtos (1), Produtos → Contato (1), Contato → Home (1). Com a medição otimizada por histórico, isso corresponde a **um `page_view` por navegação**. O container não é recarregado na navegação (1 script `gtm.js` durante toda a sessão).
-- Âncoras do catálogo (`/produtos#brita-1`) mudam só o fragmento; o GA4 não conta mudança de fragmento como nova página (comportamento desejado).
-- **Ainda não confirmado com o GA4 real** (a Google tag não existe no container): validar no Tag Assistant/DebugView que cada navegação gera um único `page_view`.
+- Fluxo Web `https://www.mineradoraberte.com.br`; Medição otimizada com *alterações de página baseadas em eventos do histórico do navegador* ligada.
+- Dimensões personalizadas (evento): `product`, `placement`, `contact_type`, `supply_mode`, `quantity_unit`, `form_name`.
+- **Identidade dos relatórios**: "Combinada" ou "Com base em modelos" para usar a modelagem comportamental do GA4. A modelagem só é aplicada se a propriedade atender aos requisitos do Google (volume mínimo diário de eventos com e sem consentimento por vários dias); sem isso, os relatórios mostram apenas o que foi observado com consentimento.
+- Retenção conforme a política aprovada; fuso America/Sao_Paulo; moeda BRL.
 
 ---
 
-## 6. Testes
+## 6. page_view e navegação
 
-### Realizados em 23/10/2026 — build de produção local com `GTM-WQZ8BXHF` (container real, vazio), Chrome headless via DevTools Protocol
+- O site não envia `page_view` próprio; a Google tag (carregamento) e a medição otimizada (navegações internas) cuidam disso, com ou sem consentimento (sem consentimento, como ping sem cookies).
+- Teste de 23/10/2026: Home → Produtos → Contato → Home = **1 `pushState` com mudança de URL por navegação**, nenhum `replaceState` na mesma URL, `gtm.js` não baixado de novo, 1 container. Corresponde a **um `page_view` por página**. Confirmar no Tag Assistant quando a Google tag existir.
+
+---
+
+## 7. Testes
+
+### Realizados em 23/10/2026 — build de produção local e domínio oficial, container real `GTM-WQZ8BXHF` (vazio), Chrome headless (DevTools Protocol)
+
+Estado de consentimento lido em `google_tag_data.ics` (o estado interno que as tags do GTM consultam). Cliques em `tel:`/`wa.me` e `window.open` interceptados: **nenhuma ligação ou mensagem real**.
 
 | Cenário | Resultado |
 | --- | --- |
-| **A. Primeiro acesso** | Aviso exibido; `dataLayer` inexistente; **0 requisições** ao Google; 0 cookies; clique em telefone não gera evento; "Personalizar" mostra as duas opções desmarcadas |
-| **C. Recusar** | Escolha salva; aviso não reaparece ao recarregar; 0 requisições; 0 cookies; telefone e WhatsApp continuam clicáveis |
-| **B. Aceitar** (reabrindo pelo rodapé) | `gtm.js` solicitado **uma vez**, 1 script no DOM; ordem: default negado → `ads_data_redaction` → update concedido → `gtm.js`; `phone_click` e `whatsapp_click` (principal e secundário) com 1 evento por clique |
-| **F. Navegação** | Home → Produtos → Contato (via catálogo) → Home: 1 `pushState` por navegação, container não recarregado, `dataLayer` preservado, `product_quote_click` com `product: brita-1`, `placement: catalog` |
-| **Formulário** | `quote_form_start` uma vez; envio inválido não dispara nada e destaca Unidade/Modalidade; envio válido → 1 `quote_whatsapp_open` (`product`, `supply_mode`, `quantity_unit`); nome, telefone e observações **ausentes** do `dataLayer` |
-| **D. Alterar** (desmarcar Publicidade) | Recarga; `update` com análise concedida e anúncios negados; cookie `_gcl_au` removido, `_ga` mantido; 1 `gtm.js` |
-| **D2. Retirar tudo** | Recarga; 0 scripts, `dataLayer` inexistente, cookies `_ga` removidos, 0 requisições |
-| **E. Recarregar** com escolha salva | Estado restaurado sem aviso; ordem de inicialização correta |
+| **A. Primeiro acesso** | `gtm.js` baixado **1 vez** com o aviso aberto; ordem: default negado → `ads_data_redaction` → `gtm.js`; GTM com os 4 estados *denied (default)*; 0 cookies; cliques geram eventos no `dataLayer` |
+| **B. Recusar** | estados negados; GTM continua (1 script, 1 container); recarregar não mostra o aviso; telefone/WhatsApp clicáveis e eventos no `dataLayer`; 0 cookies |
+| **C. Aceitar** (rodapé) | `update` concedido **sem recarregar**; GTM com os 4 *granted (update)*; 1 script; eventos continuam |
+| **D. Só Análise** | `analytics_storage` granted, publicidade denied; `_gcl_au` (de teste) apagado, `_ga` mantido; sem recarga |
+| **E. Só Publicidade** | `analytics_storage` denied, publicidade granted; `_ga` apagado; após recarga, ordem default → `ads_data_redaction` → `update` → `gtm.js` |
+| **F. Revogar tudo** | 4 estados *denied (update)*; cookies apagados; GTM permanece; 3 cliques = 3 eventos (sem duplicação) |
+| **G. Navegação** | 1 `pushState` por navegação; `gtm.js` não baixado de novo; `product_quote_click` com `product: pedrisco`, `placement: catalog` |
+| **H. Conversão** (recusado e aceito) | `phone_click`, `whatsapp_click` (principal e secundário), `quote_form_start` e, após validação, 1 `quote_whatsapp_open`; nome, telefone, observações e URL `?text=` **ausentes** do `dataLayer` |
 
-Também: lint, `tsc --noEmit` e build sem erros; 360/390/768/1024/1440/1920 px sem overflow e com CLS 0 (Home e /produtos, com o aviso aberto).
+Também: lint, `tsc --noEmit`, build; 360–1920 px sem overflow e com CLS 0.
 
-### Não realizado (depende da configuração no GTM)
+### O que estes testes NÃO comprovam
 
-Tag Assistant, DebugView, relatórios em tempo real, cookies `_ga` gravados de fato e hits `g/collect`. **A propriedade não está coletando dados** até a Google tag ser publicada.
+- **Pings sem cookies e hits do GA4**: o container não tem nenhuma tag; nenhuma requisição `g/collect` existe ainda. Os cookies `_ga` também não aparecem com "Aceitar" pelo mesmo motivo.
+- Tag Assistant, DebugView, Tempo real, modelagem e atribuição.
 
 ### Roteiro após configurar o GTM
 
-1. GTM → **Visualizar** com `https://www.mineradoraberte.com.br/` (Tag Assistant).
-2. Antes de responder ao aviso: nenhuma tag no Tag Assistant (o container nem carrega — o Tag Assistant pode mostrar "não encontrado" até autorizar; é esperado).
-3. **Aceitar** → aba *Consentimento*: default negado, update concedido; *Tags*: "GA4 - Google tag" disparada.
-4. Clicar telefone, WhatsApp principal e secundário, orçamento do catálogo; preencher o formulário com dados fictícios e validar (**não enviar** a mensagem no WhatsApp). Cada ação = 1 tag de evento disparada.
-5. GA4 → **Admin → DebugView** (o modo de visualização do GTM ativa o `debug_mode`): eventos com parâmetros; navegar Home → Produtos → Contato → Home e conferir **um** `page_view` por página.
-6. GA4 → **Relatórios → Tempo real**: usuário ativo e eventos.
-7. Testar **Recusar** e **Personalizar → só Publicidade**: a Google tag **não** deve disparar.
-8. Publicar a versão do container.
+1. GTM → **Visualizar** em `https://www.mineradoraberte.com.br/`.
+2. Sem responder ao aviso: aba *Consentimento* com os 4 estados **negados (padrão)** no evento *Consent Initialization*; Google tag **disparada**; Network: `g/collect` com `gcs=G100`, `npa=1` e sem cookie `_ga` (ping sem cookies).
+3. **Aceitar**: aba *Consentimento* com *update* concedido; novos hits com `gcs=G111`; cookies `_ga`/`_ga_*` criados.
+4. Clicar telefone, WhatsApp (principal e secundário), orçamento do catálogo; preencher e validar o formulário com dados fictícios (**não enviar** a mensagem). 1 tag de evento por ação.
+5. GA4 → **DebugView** (com consentimento): eventos e parâmetros; navegação Home → Produtos → Contato → Home com **um** `page_view` por página.
+6. Repetir com **Recusar** e com **só Publicidade**: nenhum cookie `_ga`; hits com `gcs=G100`/`G110`.
+7. Publicar a versão.
 
 ---
 
-## 7. Cuidados contra duplicação
+## 8. Google Ads — planejamento (NÃO ativado)
 
-- Um único container, carregado só pelo `ConsentManager` (layout raiz). Não instalar GTM ou `gtag.js` em outro lugar (nem por integração da Vercel, plugin ou script do GA4).
-- Não criar segunda Google tag com `G-LRVXNPM6ZG` nem tag de `page_view` manual no GTM.
-- Um evento por interação: o listener de cliques é único e delegado; o formulário dispara `quote_form_start` uma vez e `quote_whatsapp_open` só após validação.
-- A URL do WhatsApp com a mensagem preenchida nunca é enviada como parâmetro. Desativar no GTM qualquer variável de "Click URL" em tags do GA4 para links `wa.me` com `?text=`.
-- UTMs e `gclid` são preservados pelos redirecionamentos (apex → `www`, `/produtos/<slug>` → `/produtos#<slug>`) e lidos pela Google tag na página de entrada. O site não guarda parâmetros de campanha.
+Campanha de Pesquisa com dois grupos — **Brita** e **Areia** — ambos com URL final `https://www.mineradoraberte.com.br/`. Nenhuma campanha, tag ou conversão foi criada.
 
-## 8. Google Ads — estratégia de conversões (proposta, NÃO ativada)
+| Evento | Papel planejado |
+| --- | --- |
+| `quote_whatsapp_open` | **Principal candidato** a conversão comercial (formulário validado) |
+| `whatsapp_click` | Contato direto — inicialmente **secundária** |
+| `phone_click` | Interesse em ligação — inicialmente **secundária** |
+| `quote_form_start` | Engajamento (não conversão) |
+| `product_quote_click` | Engajamento (não conversão) |
 
-Campanha de Pesquisa com dois grupos — **01 Brita** e **02 Areia** — ambos com URL final `https://www.mineradoraberte.com.br/`. Nenhuma campanha, grupo ou conversão foi criado nesta etapa.
-
-| Ação | Fonte | Classificação proposta | Contagem |
-| --- | --- | --- | --- |
-| `quote_whatsapp_open` | GA4 importado | **Primária** (lead qualificado: formulário validado) | Uma por clique |
-| `whatsapp_click` (`contact_type = principal`) | GA4 importado | **Primária** | Uma por clique |
-| `phone_click` (`contact_type = principal`) | GA4 importado | **Primária** | Uma por clique |
-| `whatsapp_click` / `phone_click` secundário | GA4 importado | Secundária | Uma |
-| `product_quote_click`, `quote_form_start` | GA4 importado | Secundária (observação) | Uma |
-| Orçamento/venda confirmados no CRM | Importação offline (gclid) | **Futura primária**, substituindo as de intenção | — |
-
-Regras para não duplicar:
-
-- Escolher **uma** fonte por ação: ou importar o evento do GA4, ou criar a tag nativa do Google Ads no GTM — nunca as duas como primárias.
-- Como `quote_whatsapp_open` sempre vem depois de interações no formulário, não usar `quote_form_start` como primária.
-- Todas as conversões de intenção devem ter valor simbólico (ou nenhum) — não representam receita.
-- Quando existir confirmação real (CRM), rebaixar as conversões de intenção para secundárias.
-
-Atribuição:
-
-- O site preserva UTMs e `gclid` em redirecionamentos (domínio sem `www` → `www` e `/produtos/<slug>` → `/produtos#<slug>`; testado em 15/10/2026).
-- Ativar a **marcação automática** (auto-tagging) no Google Ads.
-- Não colocar dados pessoais em URLs. O site não guarda parâmetros de campanha.
+- A escolha definitiva das conversões principais será feita **depois** de validar os eventos e a qualidade dos contatos recebidos.
+- **Uma fonte por ação**: importar do GA4 **ou** tag nativa do Google Ads no GTM — nunca as duas para a mesma ação. Não disparar a mesma conversão duas vezes.
+- Conversões de intenção sem valor de receita; quando houver CRM com orçamento/venda confirmados, importar conversões offline e rebaixar as de intenção.
+- **Limitações**: com consentimento negado, a conversão não é atribuída individualmente; o Google Ads pode **modelar** parte delas, desde que a conta atinja os requisitos de volume e elegibilidade do Google. Não há garantia de que toda interação será atribuída a uma campanha. Quando o Google Ads for configurado, avaliar `url_passthrough` (Conversion Linker) para preservar o `gclid` entre páginas sem cookies.
+- Marcação automática (auto-tagging) ativa no Google Ads; o site preserva UTMs e `gclid` nos redirecionamentos e não guarda parâmetros de campanha.
 
 ---
 
+## 9. Cuidados contra duplicação
 
-**Limitação do modo básico:** se o visitante chega por um anúncio (`gclid`) e só autoriza depois de navegar para outra página, o `gclid` não está mais na URL e aquele clique pode não ser atribuído. O modo avançado (pings sem cookies, `url_passthrough`) reduz a perda, mas carrega o Google antes do consentimento — decisão jurídica.
+- Um único container, inserido só pelo script `gtm-bootstrap` (layout raiz, verifica `script[data-gtm-container]`). Não instalar GTM ou `gtag.js` por outra via (integração da Vercel, plugin, snippet do GA4).
+- Uma Google tag com `G-LRVXNPM6ZG`; nada de `page_view` manual.
+- Um listener de cliques delegado (`ConversionTracking`); o formulário dispara `quote_form_start` uma vez e `quote_whatsapp_open` só após validação.
+- A URL do WhatsApp com `?text=` nunca vira parâmetro. Não usar a variável *Click URL* em tags do GA4 para links `wa.me`.
 
-## 9. Search Console e indexação (Etapa 05B, sem alterações)
+---
+
+## 10. Search Console e indexação (Etapa 05B, sem alterações)
 
 Auditoria do domínio em 15/10/2026:
 
@@ -223,11 +236,17 @@ Pela documentação do Google (*Block Search indexing with noindex*): para a reg
 ---
 
 
-## 10. Pendências
+## 11. Privacidade e LGPD
 
-1. **GTM:** criar variáveis, Google tag, acionadores e tags de evento (seção 4), testar (seção 6) e publicar.
-2. **GA4:** medição otimizada, dimensões personalizadas, retenção, eventos-chave após aprovação.
-3. **Revisão jurídica** da Política de Privacidade e do aviso de consentimento antes do lançamento.
-4. **Google Ads:** conta, aprovação da estratégia (seção 8), Conversion Linker/importação — etapa futura.
-5. Search Console e correção do `robots.txt` (seção 9) — aguardando aprovação.
+A Política de Privacidade (`/politica-de-privacidade`) descreve: coleta com cookies só após autorização; **sinais limitados sem cookies** enviados ao Google mesmo sem autorização (página, ocorrência de ação, estado do consentimento e dados técnicos da conexão, como IP); finalidades (estatísticas, modelagem); publicidade ainda não ativa; como revisar preferências.
+
+**Revisão jurídica necessária** antes do lançamento: no modo avançado há transmissão de dados ao Google sem consentimento (pings sem cookies, incluindo o IP inerente à conexão). A base legal para esse tratamento (ex.: legítimo interesse, com teste de balanceamento) e a transparência do aviso precisam ser avaliadas por um profissional. Esta implementação **não** garante conformidade com a LGPD por si só.
+
+## 12. Pendências
+
+1. **GTM:** variáveis, Google tag **sem** consentimento adicional, acionadores e tags de evento (seção 5); testar (seção 7) e publicar.
+2. **GA4:** medição otimizada, dimensões personalizadas, identidade dos relatórios, retenção.
+3. **Revisão jurídica** do modo avançado, da Política e do aviso (seção 11).
+4. **Google Ads:** conta, validação dos eventos e da qualidade dos contatos, escolha das conversões (seção 8).
+5. Search Console e `robots.txt` (seção 10) — aguardando aprovação.
 6. Futuro: CRM com confirmação real de orçamento/venda.

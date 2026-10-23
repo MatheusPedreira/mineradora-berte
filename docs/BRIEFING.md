@@ -1,6 +1,6 @@
 # Mineradora Berté — Briefing do site
 
-Status: **Etapa 07** concluída (GTM `GTM-WQZ8BXHF` integrado com Consent Mode v2 básico; GA4 `G-LRVXNPM6ZG` a configurar dentro do GTM — ver seção 15 e `docs/ANALYTICS_SETUP.md`). Fotos de 8 dos 10 materiais (seção 14). Domínio oficial em uso como ambiente de testes, `noindex`.
+Status: **Etapa 08** concluída (Consent Mode v2 **avançado**: GTM `GTM-WQZ8BXHF` em todas as páginas com consentimento negado por padrão; GA4 `G-LRVXNPM6ZG` a configurar no GTM — ver seção 16 e `docs/ANALYTICS_SETUP.md`). Fotos de 8 dos 10 materiais (seção 14).
 
 ---
 
@@ -547,3 +547,30 @@ Detalhes técnicos, configuração do painel e testes: **`docs/ANALYTICS_SETUP.m
 - [ ] Revisão jurídica da Política e do aviso.
 - [ ] Google Ads (conta, estratégia de conversões, Conversion Linker) — etapa futura.
 - [ ] Decisão sobre o `robots.txt` (`Disallow: /` + `noindex`) — ver `ANALYTICS_SETUP.md` seção 9.
+
+## 16. Etapa 08 — Consent Mode v2 avançado (23/10/2026)
+
+Detalhes, configuração do GTM e testes: **`docs/ANALYTICS_SETUP.md`** (seções 2–7). Mesma abordagem geral do projeto DD Desentope+ (script inline no layout), sem copiar configurações daquele cliente.
+
+### O que mudou
+
+- O GTM deixou de esperar o consentimento: um script inline `beforeInteractive` no layout cria o `dataLayer`, define os 4 estados **negados**, `ads_data_redaction`, aplica a escolha salva e insere o `gtm.js` **uma vez** — em toda página, antes de qualquer tag.
+- Escolhas no aviso → `consent update` imediato, **sem recarregar**. Revogar → estados negados + remoção dos cookies da finalidade, também sem recarregar.
+- Os eventos comerciais entram no `dataLayer` sempre; cada tag do Google decide o que enviar conforme o consentimento (sem consentimento: pings sem cookies).
+- Aviso: mesma interface; texto agora diz que, sem autorização, o Google recebe sinais limitados sem cookies.
+- Política de Privacidade: explica cookies com autorização × sinais sem cookies sem autorização, finalidades e modelagem.
+- Removidos: `initTagManager`, `<Script>` condicional no `ConsentManager` e a recarga na revogação.
+
+### Arquivos
+
+`src/app/layout.tsx`, `src/lib/analytics.ts`, `src/components/analytics/ConsentManager.tsx`, `src/app/politica-de-privacidade/page.tsx`, `docs/ANALYTICS_SETUP.md`.
+
+### Atenção no GTM
+
+A Google tag e as tags de evento do GA4 **não** devem ter "Exigir consentimento adicional" (isso era recomendado no modo básico e agora bloquearia os pings do modo avançado). O container segue **vazio**: nada é enviado ao GA4 até a configuração.
+
+### Pendências
+
+- [ ] Configurar e publicar o GTM; validar consentimento no Tag Assistant, pings `gcs=G100` e DebugView.
+- [ ] **Revisão jurídica** do modo avançado (base legal dos sinais sem cookies) e da Política.
+- [ ] Google Ads: validar eventos e qualidade dos contatos antes de escolher conversões.

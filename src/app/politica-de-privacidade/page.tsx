@@ -65,13 +65,14 @@ export default function PrivacyPage() {
                   Ao acessar o site pela primeira vez, você vê um aviso para autorizar ou recusar, separadamente, o uso
                   de cookies de <strong className="font-semibold text-graphite">análise</strong> e de 
                   <strong className="font-semibold text-graphite">publicidade</strong>. Nenhuma das opções vem marcada.
-                  Até que você autorize, nenhuma ferramenta de análise ou publicidade é carregada. Se recusar, o site, o
-                  formulário de orçamento e os contatos por telefone e WhatsApp continuam funcionando normalmente.
+                  Responder ao aviso não é obrigatório: o site, o formulário de orçamento e os contatos por telefone e
+                  WhatsApp funcionam normalmente com qualquer escolha, ou sem nenhuma.
                 </p>
                 <p className="mt-3">
                   Você pode revisar ou retirar a sua autorização a qualquer momento em &ldquo;Preferências de
-                  privacidade&rdquo;, no rodapé do site ou logo abaixo. Ao retirar, os cookies daquela finalidade são
-                  apagados deste site e as ferramentas deixam de ser carregadas. A sua escolha fica guardada no
+                  privacidade&rdquo;, no rodapé do site ou logo abaixo. Ao retirar, a nova escolha vale imediatamente,
+                  os cookies daquela finalidade são apagados deste site e as ferramentas deixam de gravar cookies.
+                  A sua escolha fica guardada no
                   armazenamento local do navegador (somente as opções escolhidas e a data), para não ser perguntada a
                   cada página.
                 </p>
@@ -81,11 +82,24 @@ export default function PrivacyPage() {
                 <h2 className="text-2xl font-bold tracking-[-0.02em] text-graphite">Google Tag Manager e Google Analytics</h2>
                 <p className="mt-3">
                   O site usa o Google Tag Manager, serviço do Google que carrega as ferramentas de medição, e o Google
-                  Analytics 4, que gera estatísticas de visitas. Ambos só são carregados depois da autorização de
-                  análise.
+                  Analytics 4, que gera estatísticas de visitas. O site adota o{" "}
+                  <strong className="font-semibold text-graphite">modo de consentimento avançado</strong> do Google: essas
+                  ferramentas são carregadas em todas as páginas, mas o seu comportamento depende da sua escolha.
                 </p>
                 <p className="mt-3">
-                  Com a autorização, o Google Analytics registra informações de navegação, como páginas visitadas,
+                  <strong className="font-semibold text-graphite">Sem autorização</strong> (recusa ou enquanto você não
+                  responde ao aviso), nenhum cookie de análise ou publicidade é gravado no seu navegador. Ainda assim,
+                  as ferramentas do Google podem enviar ao Google{" "}
+                  <strong className="font-semibold text-graphite">sinais limitados, sem cookies</strong>, como a página
+                  visitada, a ocorrência de uma ação (por exemplo, um clique no WhatsApp), o estado do seu
+                  consentimento e informações técnicas inerentes à conexão, como o endereço IP e o navegador. Esses
+                  sinais não usam identificadores gravados no seu aparelho e servem para estatísticas agregadas e para
+                  a estimativa (modelagem) de visitas e conversões que não podem ser medidas individualmente. Eles não
+                  são usados para personalizar anúncios.
+                </p>
+                <p className="mt-3">
+                  <strong className="font-semibold text-graphite">Com a autorização de análise</strong>, o Google
+                  Analytics registra informações de navegação, como páginas visitadas,
                   origem do acesso (incluindo parâmetros de campanha presentes no endereço), tipo de dispositivo e
                   navegador e localização aproximada, além de ações no site: cliques em telefone e WhatsApp, cliques em
                   &ldquo;Solicitar orçamento&rdquo; de um material, início do preenchimento do formulário e abertura do
@@ -93,7 +107,7 @@ export default function PrivacyPage() {
                   endereço, observações e o texto da mensagem nunca são enviados.
                 </p>
                 <p className="mt-3">
-                  Para isso, o Google Analytics grava cookies no seu navegador (<code>_ga</code> e 
+                  Para isso, com a autorização, o Google Analytics grava cookies no seu navegador (<code>_ga</code> e 
                   <code>_ga_*</code>), com validade de até dois anos na configuração padrão do Google. A finalidade é
                   entender como o site é usado e quais canais trazem pedidos de orçamento.
                 </p>
@@ -103,7 +117,10 @@ export default function PrivacyPage() {
                 <p className="mt-3">
                   No momento, o site não utiliza ferramentas de publicidade, como o Google Ads ou pixels de redes
                   sociais. A opção de publicidade do aviso fica disponível para a medição de futuras campanhas de
-                  anúncios do Google; antes da ativação, esta política será atualizada.
+                  anúncios do Google. Quando houver campanhas, a autorização de publicidade permitirá medir se uma
+                  visita vinda de um anúncio resultou em contato; sem ela, a medição de anúncios se limita aos sinais
+                  sem cookies descritos acima e a estimativas feitas pelo próprio Google. Antes da ativação, esta
+                  política será atualizada.
                 </p>
               </section>
               <section>

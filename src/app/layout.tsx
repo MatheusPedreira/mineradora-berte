@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Plus_Jakarta_Sans } from "next/font/google";
+import Script from "next/script";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { MobileQuoteBar } from "@/components/layout/MobileQuoteBar";
@@ -8,6 +9,7 @@ import { ConsentManager } from "@/components/analytics/ConsentManager";
 import { JsonLd, localBusinessSchema } from "@/components/seo/JsonLd";
 import { company } from "@/content/company";
 import { isIndexable, siteUrl } from "@/lib/site";
+import { gtmBootstrapScript, gtmId } from "@/lib/analytics";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -52,6 +54,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="pt-BR" className={`${archivo.variable} ${jakarta.variable} antialiased`}>
       <body className="flex min-h-dvh flex-col">
+        {/* Consent Mode v2 avançado: consentimento padrão negado e Google Tag Manager, antes de
+            qualquer tag e uma única vez por carga de página (src/lib/analytics.ts). */}
+        {gtmId ? (
+          <Script id="gtm-bootstrap" strategy="beforeInteractive">
+            {gtmBootstrapScript(gtmId)}
+          </Script>
+        ) : null}
         <a
           href="#conteudo"
           className="sr-only z-[60] bg-navy px-4 py-3 text-sm font-semibold text-offwhite focus:not-sr-only focus:fixed focus:top-3 focus:left-3"

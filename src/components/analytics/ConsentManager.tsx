@@ -1,63 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import Script from "next/script";
-import { useEffect, useId, useRef, useState } from "react";
-import { clearConsentCookies, gtmId, initTagManager, updateConsent, type ConsentChoice } from "@/lib/analytics";
+import { useEffect, useId, useState } from "react";
+import { applyConsent, gtmId, noConsent, readConsent, saveConsent, type ConsentChoice } from "@/lib/analytics";
 
 /** Evento para reabrir as preferências (rodapé e Política de Privacidade). */
 export const CONSENT_OPEN_EVENT = "berte:consent-open";
-
-/** A escolha precisa ser lembrada para não perguntar a cada página; nada além disso é guardado. */
-const STORAGE_KEY = "berte-consent-v1";
-
-function readChoice(): ConsentChoice | null {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    const v = JSON.parse(raw) as Partial<ConsentChoice>;
-    return { analytics: v.analytics === true, ads: v.ads === true };
-  } catch {
-    return null;
-  }
-}
-
-function saveChoice(choice: ConsentChoice) {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...choice, updatedAt: new Date().toISOString() }));
-  } catch {
-    // Sem armazenamento: a escolha vale só para esta visita.
-  }
-}
 
 const buttonBase =
   "inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-[2px] px-4 text-sm font-semibold transition-colors";
 
 /**
- * Consentimento (Consent Mode v2 básico) + carregamento do Google Tag Manager.
- * Sem NEXT_PUBLIC_GTM_ID real, não renderiza nada: nenhum banner, nenhum script.
- * Com o ID, o container só é carregado depois que o visitante autoriza análise e/ou publicidade.
+ * Aviso de consentimento (Consent Mode v2 avançado). O container já foi carregado pelo
+ * script inline do layout, com os estados negados e a escolha salva aplicada; aqui só
+ * se registra uma escolha nova. Não é modal: o site, os contatos e o formulário funcionam
+ * sem resposta. Sem NEXT_PUBLIC_GTM_ID real, não renderiza nada.
  */
 export function ConsentManager() {
-  const [choice, setChoice] = useState<ConsentChoice | null>(null);
   const [open, setOpen] = useState(false);
   const [details, setDetails] = useState(false);
-  const [draft, setDraft] = useState<ConsentChoice>({ analytics: false, ads: false });
-  const [loaded, setLoaded] = useState(false);
-  const initialized = useRef(false);
+  const [draft, setDraft] = useState<ConsentChoice>(noConsent);
   const uid = useId();
 
   useEffect(() => {
     if (!gtmId) return;
-    const stored = readChoice();
-    // Leitura do armazenamento só existe no navegador; o estado inicial do servidor é "sem escolha".
+    // Leitura do armazenamento só existe no navegador; o estado inicial do servidor é "fechado".
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (stored) setChoice(stored);
-    else setOpen(true);
+    if (!readConsent()) setOpen(true);
 
     const reopen = () => {
-      const current = readChoice();
-      setDraft(current ?? { analytics: false, ads: false });
+      setDraft(readConsent() ?? noConsent);
       setDetails(true);
       setOpen(true);
     };
@@ -65,43 +37,17 @@ export function ConsentManager() {
     return () => window.removeEventListener(CONSENT_OPEN_EVENT, reopen);
   }, []);
 
-  useEffect(() => {
-    if (!gtmId || !choice) return;
-    if (initialized.current) {
-      updateConsent(choice);
-    } else if (choice.analytics || choice.ads) {
-      initialized.current = true;
-      initTagManager(choice);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setLoaded(true);
-    }
-  }, [choice]);
-
   if (!gtmId) return null;
 
   function decide(next: ConsentChoice) {
-    saveChoice(next);
-    const revoked = { analytics: !!choice?.analytics && !next.analytics, ads: !!choice?.ads && !next.ads };
-    if (revoked.analytics || revoked.ads) {
-      // Revogação: estados negados para o container atual, remoção dos cookies da finalidade
-      // e recarga, para que nenhuma tag já carregada continue ativa (na recarga, o container
-      // só volta se ainda houver alguma finalidade autorizada).
-      if (initialized.current) updateConsent(next);
-      clearConsentCookies(revoked);
-      window.location.reload();
-      return;
-    }
-    setChoice(next);
+    applyConsent(readConsent() ?? noConsent, next);
+    saveConsent(next);
     setOpen(false);
     setDetails(false);
   }
 
   return (
     <>
-      {loaded ? (
-        <Script id="gtm" src={`https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(gtmId)}`} />
-      ) : null}
-
       {open ? (
         <section
           aria-labelledby={`${uid}-titulo`}
@@ -113,8 +59,8 @@ export function ConsentManager() {
             Cookies de análise e publicidade
           </h2>
           <p className="mt-1 text-[0.8125rem] leading-relaxed text-basalt">
-            Usamos somente com a sua autorização, para medir visitas e anúncios. O site funciona normalmente se você
-            recusar.{" "}
+            Com a sua autorização, usamos cookies para medir visitas e anúncios. Sem ela, o Google recebe só sinais
+            limitados, sem cookies. O site funciona normalmente se você recusar.{" "}
             <Link href="/politica-de-privacidade" className="font-semibold text-navy underline underline-offset-4">
               Política de Privacidade
             </Link>
