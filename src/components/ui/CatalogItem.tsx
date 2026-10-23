@@ -35,7 +35,7 @@ export function CatalogItem({ product, sizes, large, className = "" }: CatalogIt
         large={large}
         compact
         sizes={sizes}
-        className={`aspect-square ${large ? "sm:aspect-[16/9]" : "sm:aspect-[4/3]"}`}
+        className={`aspect-square ${large ? "sm:aspect-[3/2]" : ""}`}
       />
       <div className="flex flex-col sm:flex-1 sm:pt-4 sm:pb-5">
         <p className="text-[0.65rem] font-semibold tracking-[0.1em] text-basalt uppercase sm:text-[0.7rem] sm:tracking-eyebrow">

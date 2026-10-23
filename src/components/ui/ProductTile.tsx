@@ -16,7 +16,7 @@ type ProductTileProps = {
 export function ProductTile({ product, sizes, large, fill, className = "" }: ProductTileProps) {
   const category = getCategory(product.category)?.name;
   const media = `h-full transition-transform duration-700 ease-out-quart group-hover:scale-[1.03] ${
-    large ? `aspect-[4/3] sm:aspect-[16/9] ${fill ? "lg:aspect-auto lg:min-h-0" : ""}` : "aspect-[4/3]"
+    large ? `aspect-[4/3] sm:aspect-[16/9] ${fill ? "lg:aspect-auto lg:min-h-0" : ""}` : "aspect-square"
   }`;
 
   return (

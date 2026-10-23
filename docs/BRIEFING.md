@@ -1,6 +1,6 @@
 # Mineradora Berté — Briefing do site
 
-Status: **Etapa 05B** concluída (infraestrutura de mensuração pronta e desativada até receber os IDs reais — ver `docs/ANALYTICS_SETUP.md`). Domínio oficial em uso como ambiente de testes, `noindex`.
+Status: **Etapa 06** concluída (fotografias reais de 8 dos 10 materiais no catálogo e na Home — ver seção 14). Mensuração (Etapa 05B) segue desativada até receber os IDs reais — ver `docs/ANALYTICS_SETUP.md`. Domínio oficial em uso como ambiente de testes, `noindex`.
 
 ---
 
@@ -30,7 +30,8 @@ Status: **Etapa 05B** concluída (infraestrutura de mensuração pronta e desati
 - [ ] **Domínio oficial** — necessário para canonicals, sitemap e indexação.
 - [ ] **Logo em vetor (SVG/AI/PDF)** — os recortes atuais vêm de um PNG. Um vetor melhora a nitidez e permite versões oficiais (horizontal, negativa, monocromática).
 - [x] **Fotografias reais (lote 1)** — 6 fotos e 2 vídeos enviados pela empresa e confirmados como originais (15/10/2026). Ver seção 7.
-- [ ] **Fotos da frota de entrega** (truck, 6x4, bitruck, carretas) e **fotos de cada produto** — ainda não recebidas.
+- [ ] **Fotos da frota de entrega** (truck, 6x4, bitruck, carretas) — ainda não recebidas.
+- [ ] **Fotos de produto** — 8 de 10 integradas em 23/10/2026; faltam Areia industrial e Rachão mataco (ver seção 14).
 - [ ] **Por produto**: descrição, especificações técnicas confirmadas, aplicações confirmadas e foto.
 - [ ] **Validação das categorias** — o catálogo foi agrupado pela família do nome (Britas e derivados, Areias, Rachões), sem presumir granulometria. Confirmar com a empresa.
 - [ ] **Documentos técnicos** (fichas, ensaios), se a empresa quiser publicá-los — entram em `technicalDocuments`.
@@ -454,3 +455,64 @@ Guia completo: **`docs/ANALYTICS_SETUP.md`** (IDs, passos no GTM/GA4, eventos, c
 - Revisão jurídica da Política e do aviso de cookies.
 - Aprovação da correção do `robots.txt` e do método de verificação do Search Console.
 
+
+## 14. Etapa 06 — Fotografias reais dos materiais (23/10/2026)
+
+### Arquivos recebidos e correspondência
+
+Originais enviados em `public/images/products/` (mantidos lá, ignorados pelo Git) e copiados, com `SHA1SUMS`, para `/Users/matheus/berte-midia-original/produtos-2026-10-23/`. Todos sem GPS/dados de câmera.
+
+| Original | Formato | Produto | Arquivo no site | Situação |
+| --- | --- | --- | --- | --- |
+| `brita-1.jpeg` | JPEG 1200×1600, 229 KB | Brita 1 | `brita-1.webp` (165 KB) | Integrada |
+| `brita-2.jpeg` | JPEG 1200×1600, 235 KB | Brita 2 | `brita-2.webp` (170 KB) | Integrada |
+| `pedrisco.jpeg` | JPEG 1200×1600, 249 KB | Pedrisco | `pedrisco.webp` (192 KB) | Integrada |
+| `areia-natural.jpeg` | JPEG 1200×1600, 142 KB | Areia natural | `areia-natural.webp` (91 KB) | Integrada |
+| `bica-corrida.jpeg` | JPEG 1200×1600, 201 KB | Bica corrida | `bica-corrida.webp` (142 KB) | Integrada — ver dúvidas |
+| `po-de-pedra.jpeg` | JPEG 1200×1600, 211 KB | Pó de brita | `po-de-brita.webp` (159 KB) | Integrada — confirmar |
+| `rachaozinho.jpeg` | JPEG 1200×1600, 235 KB | Rachãozinho primário | `rachaozinho-primario.webp` (174 KB) | Integrada — confirmar |
+| `rachao-mina.png` | PNG 472×642, 619 KB | Rachão mina | `rachao-mina.webp` (95 KB, 469×642) | Integrada — pedir original |
+| `bgs.jpeg` | JPEG 1200×1600, 272 KB | — | — | **Não integrada** |
+
+### Identificação duvidosa
+
+- **`po-de-pedra.jpeg` → Pó de brita.** "Pó de pedra" e "pó de brita" são nomes de mercado do mesmo material (finos da britagem), o catálogo não tem outro produto equivalente e a amostra (finos com grãos pequenos) é coerente. Associado por nomenclatura; **confirmar com a empresa**.
+- **`rachaozinho.jpeg` → Rachãozinho primário.** Único "rachãozinho" do catálogo; a foto mostra uma pedra na mão diante de uma pilha de blocos. **Confirmar com a empresa.**
+- **`bica-corrida.jpeg`** — nome do arquivo corresponde ao produto, mas a amostra aparenta poucos finos (lascas de tamanhos parecidos), o que é incomum para bica corrida. Integrada pelo nome do arquivo; vale confirmar.
+- **`bgs.jpeg`** — material graduado com finos, provavelmente **Brita Graduada Simples (BGS)**, que não existe como produto no catálogo. Não foi associado a Bica corrida nem a Areia industrial. Perguntar à empresa se BGS deve virar o 11º material ou se a foto pertence a outro item.
+- **`rachao-mina.png`** — é uma captura de tela (perfil de cor do monitor "LG ULTRAWIDE", 472×642, borda preta de 2 px removida). Resolução baixa: fica aceitável nos cards, mas perde nitidez em telas retina. **Pedir a foto original.**
+
+### Produtos ainda sem fotografia
+
+Areia industrial (Nº 06) e Rachão mataco (Nº 10) continuam com o painel numerado temporário, no mesmo espaço da foto.
+
+### Otimização
+
+- WebP qualidade 82 via `sharp` (já instalado pelo Next), sem redimensionar (nada foi ampliado), sem nitidez, saturação ou filtros; perfil de cor convertido para sRGB e metadados removidos. Comparação em recorte 100% sem diferença visível em relação ao original.
+- Total: originais **2.121 KB** → WebP **1.188 KB** (−44%). Na entrega, o `next/image` ainda gera versões AVIF/WebP no tamanho de cada card (ex.: miniatura de 104 px no celular).
+- `.gitignore`: `public/images/products/*.jpeg` e `*.png` (originais fora do repositório).
+
+### Código
+
+- `src/content/products.ts`: `image` (src, alt descritivo e `position`) por produto — fonte única para Home e catálogo. `position` é uma classe `object-[x%_y%]` que mantém a mão e a amostra visíveis em qualquer proporção.
+- `ProductMedia` repassa o enquadramento ao `MediaSlot` (`next/image` com `fill`, `sizes` responsivo, lazy loading; nenhuma foto de produto usa `preload`).
+- Alt texts: "Amostra de brita 1 na mão, sobre a pilha do material na Mineradora Berté" etc.; Rachão mina: "Pilha de rachão mina da Mineradora Berté".
+
+### Ajustes visuais
+
+- Home: destaques menores passaram de 4:3 para **quadrado** (fotos verticais); o destaque principal (Brita 1) ocupa a altura da grade no desktop e ficou próximo do retrato. Seção ~150 px mais alta no desktop.
+- Catálogo: cards de 4:3 para **quadrado** a partir de 640 px; destaque de categoria (Brita 1, Rachãozinho primário) de 16:9 para **3:2**. Miniatura quadrada do celular mantida.
+- Sem mudanças em tipografia, cores, CTAs, hero, navegação ou outras seções.
+
+### Verificações
+
+- `npm run lint`, `npx tsc --noEmit`, `npm run build`: sem erros.
+- 360, 390, 768, 1024, 1440 e 1920 px (Home e /produtos): sem overflow horizontal, CLS 0, nenhuma imagem quebrada, títulos sem corte.
+- 10 links `/contato?produto=<slug>`, pré-seleção conferida, âncoras das categorias e dos materiais, 308 de `/produtos/<slug>`, telefones (49) 98409-3337 e (49) 99180-1200, JSON-LD e Open Graph preservados, `noindex, nofollow` + `Disallow: /` ativos.
+
+### Pendências
+
+- [ ] Confirmar Pó de brita, Rachãozinho primário e Bica corrida (acima).
+- [ ] Definir o destino de `bgs.jpeg` (BGS).
+- [ ] Foto original do Rachão mina em resolução maior.
+- [ ] Fotos de Areia industrial e Rachão mataco.

@@ -26,12 +26,13 @@ export function ProductMedia({ product, sizes, large, compact, preload, classNam
         sizes={sizes}
         preload={preload}
         className={className}
+        imageClassName={product.image.position}
       />
     );
   }
 
   const index = productIndex(product);
-  const slot = process.env.NODE_ENV !== "production" ? `/images/products/${product.slug}.jpg` : null;
+  const slot = process.env.NODE_ENV !== "production" ? `/images/products/${product.slug}.webp` : null;
 
   return (
     <div

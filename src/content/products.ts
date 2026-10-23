@@ -18,6 +18,11 @@ export type ProductImage = {
   /** Caminho em /public/images/products. `null` até o recebimento da foto real. */
   src: string | null;
   alt: string;
+  /**
+   * Enquadramento da foto (classe `object-[x%_y%]`). As fotos são verticais, com a amostra
+   * na metade inferior: o ponto indicado fica visível em qualquer proporção do card.
+   */
+  position?: string;
 };
 
 /**
@@ -70,12 +75,16 @@ export const productCategories: ProductCategory[] = [
   },
 ];
 
-type ProductInput = Pick<Product, "slug" | "name" | "category" | "summary" | "about"> & { featured?: boolean };
+type ProductInput = Pick<Product, "slug" | "name" | "category" | "summary" | "about"> & {
+  featured?: boolean;
+  /** Foto real do material, quando a associação arquivo → produto estiver confirmada. */
+  image?: Omit<ProductImage, "src"> & { src: string };
+};
 
-function product({ featured = false, ...input }: ProductInput): Product {
+function product({ featured = false, image, ...input }: ProductInput): Product {
   return {
     ...input,
-    image: { src: null, alt: `${input.name} da Mineradora Berté` },
+    image: image ?? { src: null, alt: `${input.name} da Mineradora Berté` },
     description: null,
     technical: {},
     featured,
@@ -85,6 +94,11 @@ function product({ featured = false, ...input }: ProductInput): Product {
 export const products: Product[] = [
   product({
     slug: "brita-1",
+    image: {
+      src: "/images/products/brita-1.webp",
+      alt: "Amostra de brita 1 na mão, sobre a pilha do material na Mineradora Berté",
+      position: "object-[45%_80%]",
+    },
     name: "Brita 1",
     category: "britas",
     featured: true,
@@ -97,6 +111,11 @@ export const products: Product[] = [
   }),
   product({
     slug: "pedrisco",
+    image: {
+      src: "/images/products/pedrisco.webp",
+      alt: "Amostra de pedrisco na mão, sobre a pilha do material na Mineradora Berté",
+      position: "object-[42%_76%]",
+    },
     name: "Pedrisco",
     category: "britas",
     featured: true,
@@ -108,6 +127,11 @@ export const products: Product[] = [
   }),
   product({
     slug: "po-de-brita",
+    image: {
+      src: "/images/products/po-de-brita.webp",
+      alt: "Amostra de pó de brita na mão, sobre a pilha do material na Mineradora Berté",
+      position: "object-[40%_72%]",
+    },
     name: "Pó de brita",
     category: "britas",
     featured: true,
@@ -119,6 +143,11 @@ export const products: Product[] = [
   }),
   product({
     slug: "brita-2",
+    image: {
+      src: "/images/products/brita-2.webp",
+      alt: "Amostra de brita 2 na mão, sobre a pilha do material na Mineradora Berté",
+      position: "object-[53%_70%]",
+    },
     name: "Brita 2",
     category: "britas",
     summary:
@@ -129,6 +158,11 @@ export const products: Product[] = [
   }),
   product({
     slug: "bica-corrida",
+    image: {
+      src: "/images/products/bica-corrida.webp",
+      alt: "Amostra de bica corrida na mão, sobre a pilha do material na Mineradora Berté",
+      position: "object-[43%_66%]",
+    },
     name: "Bica corrida",
     category: "britas",
     summary:
@@ -150,6 +184,11 @@ export const products: Product[] = [
   }),
   product({
     slug: "areia-natural",
+    image: {
+      src: "/images/products/areia-natural.webp",
+      alt: "Amostra de areia natural na mão, sobre o monte de areia da Mineradora Berté",
+      position: "object-[45%_60%]",
+    },
     name: "Areia natural",
     category: "areias",
     featured: true,
@@ -159,6 +198,11 @@ export const products: Product[] = [
   }),
   product({
     slug: "rachaozinho-primario",
+    image: {
+      src: "/images/products/rachaozinho-primario.webp",
+      alt: "Pedra de rachãozinho primário na mão, diante da pilha do material na Mineradora Berté",
+      position: "object-[52%_75%]",
+    },
     name: "Rachãozinho primário",
     category: "rachoes",
     summary:
@@ -167,6 +211,11 @@ export const products: Product[] = [
   }),
   product({
     slug: "rachao-mina",
+    image: {
+      src: "/images/products/rachao-mina.webp",
+      alt: "Pilha de rachão mina da Mineradora Berté",
+      position: "object-[50%_50%]",
+    },
     name: "Rachão mina",
     category: "rachoes",
     summary:

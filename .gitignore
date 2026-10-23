@@ -45,3 +45,8 @@ next-env.d.ts
 # mídia bruta: vídeos MP4 originais e downloads do SaveClip ficam fora do repositório
 public/images/**/*.mp4
 SaveClip.App_*
+
+# originais das fotos de produto (backup em /Users/matheus/berte-midia-original/produtos-2026-10-23/);
+# no site entram só as cópias otimizadas em WebP
+public/images/products/*.jpeg
+public/images/products/*.png
