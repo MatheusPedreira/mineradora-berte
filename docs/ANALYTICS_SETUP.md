@@ -203,6 +203,8 @@ Campanha de Pesquisa com dois grupos — **Brita** e **Areia** — ambos com URL
 
 ## 10. Search Console e indexação (Etapa 05B, sem alterações)
 
+> Atualizado em 27/10/2026: `robots.txt` ganhou grupos explícitos para AdsBot. Situação vigente em `docs/SEO_ADS_LAUNCH.md`.
+
 Auditoria do domínio em 15/10/2026:
 
 | Item | Situação |

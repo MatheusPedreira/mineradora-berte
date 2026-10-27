@@ -1,6 +1,6 @@
 # Mineradora Berté — Briefing do site
 
-Status: **Etapa 08** concluída (Consent Mode v2 **avançado**: GTM `GTM-WQZ8BXHF` em todas as páginas com consentimento negado por padrão; GA4 `G-LRVXNPM6ZG` a configurar no GTM — ver seção 16 e `docs/ANALYTICS_SETUP.md`). Fotos de 8 dos 10 materiais (seção 14).
+Status: **Etapa 08** concluída (Consent Mode v2 **avançado**: GTM `GTM-WQZ8BXHF` em todas as páginas com consentimento negado por padrão; GA4 `G-LRVXNPM6ZG` a configurar no GTM — ver seção 16 e `docs/ANALYTICS_SETUP.md`). Fotos de 8 dos 10 materiais (seção 14). Preparação para Search Console, SEO técnico e Google Ads auditada em 27/10/2026 — **indexação continua bloqueada** (seção 18 e `docs/SEO_ADS_LAUNCH.md`).
 
 ---
 
@@ -581,3 +581,23 @@ A Google tag e as tags de evento do GA4 **não** devem ter "Exigir consentimento
 - Celular: aparece no topo da página e some quando a barra fixa (que já tem WhatsApp) surge — sem botão duplicado.
 - Com o aviso de consentimento aberto, sobe acima dele (`--consent-ui`, medido no `ConsentManager`), sem sobreposição.
 - Medição: `whatsapp_click` com `placement: floating_button` (listener existente).
+
+## 18. Search Console, SEO técnico e Google Ads (27/10/2026)
+
+Relatório completo, checklist de lançamento e instruções do Search Console: **`docs/SEO_ADS_LAUNCH.md`**.
+
+- **Search Console:** propriedade `mineradoraberte.com.br` criada pelo usuário. Não consultada nesta etapa (sem acesso); nenhuma tag de verificação nova, DNS intocado, sitemap não enviado, indexação não solicitada.
+- **Indexação:** `noindex, nofollow` e `robots.txt` com `Disallow: /` para `*` **mantidos**. Conflito `Disallow` × `noindex` documentado (Inspeção de URL mostrará "Bloqueado pelo robots.txt").
+- **AdsBot:** ignora o grupo `*` (documentação oficial), portanto nunca esteve bloqueado. Adicionados grupos explícitos `AdsBot-Google` e `AdsBot-Google-Mobile` com `Allow: /` em `src/app/robots.ts`. Home, /produtos e /contato respondem 200 aos user agents do AdsBot, sem firewall nem autenticação.
+- **Corrigido:** páginas internas sem `og:image` (o `openGraph` de cada página substituía o do layout). `pageMetadata` (`src/lib/site.ts`) passou a incluir a imagem social; todas as páginas com `og:image` e `twitter:card=summary_large_image`.
+- **Sitemap:** 7 URLs canônicas (inclui `/estrutura-e-logistica` e a Política de Privacidade), validadas em build local com o domínio. Em produção segue vazio porque `NEXT_PUBLIC_SITE_URL` não está definida — **não ativada** porque o painel da Vercel não pôde ser conferido (risco de `NEXT_PUBLIC_SITE_INDEXABLE=true` liberar a indexação).
+- **SEO técnico e regional:** titles, descriptions, H1 únicos, alts, links internos, `lang`, HTTPS, www e redirecionamentos corretos. Nenhum texto comercial alterado.
+- **Conversões:** nenhum evento criado; GTM e GA4 intocados. Candidatas: `whatsapp_click` e `phone_click` (principais), `quote_whatsapp_open` (secundária).
+
+### Pendências
+
+- [ ] Conferir variáveis na Vercel e ativar `NEXT_PUBLIC_SITE_URL` (canonicals e sitemap), mantendo `noindex`.
+- [ ] Lindóia: aparece na lista visível de cidades sem confirmação — confirmar ou retirar antes dos anúncios.
+- [ ] Definir conversões no Google Ads (WhatsApp/telefone; extensão de chamada).
+- [ ] Velocidade em campo (PageSpeed Insights) e status da página de destino no Google Ads.
+- [ ] Lançamento orgânico (checklist em `SEO_ADS_LAUNCH.md`, seção 8) — **somente com autorização**.

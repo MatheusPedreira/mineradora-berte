@@ -35,6 +35,15 @@ export function pageMetadata({ title, description, path, absoluteTitle }: PageMe
       title: absoluteTitle ? title : `${title} | ${company.name}`,
       description,
       ...(url ? { url } : {}),
+      // Este openGraph substitui o do layout; sem repetir a imagem, as páginas internas ficam sem og:image.
+      images: [
+        {
+          url: "/opengraph-image.jpg",
+          width: 1200,
+          height: 630,
+          alt: "Vista aérea da Mineradora Berté em Ponte Serrada, SC, com usina de britagem e pilhas de agregados",
+        },
+      ],
     },
   };
 }
