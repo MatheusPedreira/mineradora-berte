@@ -173,9 +173,6 @@ function CityIndex() {
               <a href={company.phone.href} className="hover:text-sand">
                 {company.phone.display}
               </a>
-              <a href={company.phoneSecondary.href} className="hover:text-sand">
-                {company.phoneSecondary.display}
-              </a>
             </div>
             <ButtonLink href={quoteHref} variant="light">
               Consultar atendimento

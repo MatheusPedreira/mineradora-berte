@@ -94,9 +94,6 @@ export function whatsappUrl(number: string, text?: string) {
 /** "Falar no WhatsApp": conversa direta com o WhatsApp principal. */
 export const whatsappDirectHref = whatsappUrl(company.whatsapp.primary.number, company.whatsapp.directMessage);
 
-/** Contato alternativo (somente /contato e rodapé). */
-export const whatsappSecondaryHref = whatsappUrl(company.whatsapp.secondary.number, company.whatsapp.directMessage);
-
 /** Mensagem do pedido, no modelo aprovado. Campos vazios não aparecem. */
 export function quoteMessage(q: QuoteData) {
   const lines = quoteLines(q);

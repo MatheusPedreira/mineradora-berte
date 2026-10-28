@@ -6,13 +6,13 @@ import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { company } from "@/content/company";
 import { getProduct } from "@/content/products";
-import { whatsappDirectHref, whatsappSecondaryHref } from "@/content/quote";
+import { whatsappDirectHref } from "@/content/quote";
 import { pageMetadata } from "@/lib/site";
 
 export const metadata = pageMetadata({
   title: "Contato e Orçamento",
   description:
-    "Solicite orçamento de areia, brita e agregados com a Mineradora Berté, em Ponte Serrada (SC). Informe material, quantidade e entrega ou retirada e envie pelo WhatsApp, ou ligue (49) 98409-3337.",
+    "Solicite orçamento de areia, brita e agregados com a Mineradora Berté, em Ponte Serrada (SC). Informe material, quantidade e entrega ou retirada e envie pelo WhatsApp, ou ligue (49) 99180-1200.",
   path: "/contato",
 });
 
@@ -71,24 +71,6 @@ export default function ContactPage({ searchParams }: PageProps<"/contato">) {
                 </ButtonLink>
               </div>
 
-              <div className="mt-8 border-t border-offwhite/20 pt-6">
-                <h3 className="text-[0.7rem] font-semibold tracking-eyebrow text-sand uppercase">Contato alternativo</h3>
-                <a
-                  href={company.phoneSecondary.href}
-                  className="mt-3 block font-display text-2xl leading-none font-bold tracking-[-0.02em] tabular-nums hover:text-sand"
-                >
-                  {company.phoneSecondary.display}
-                </a>
-                <a
-                  href={whatsappSecondaryHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-offwhite underline decoration-offwhite/40 underline-offset-4 hover:text-sand"
-                >
-                  WhatsApp {company.whatsapp.secondary.display}
-                  <ArrowUpRight aria-hidden="true" className="size-4" strokeWidth={1.75} />
-                </a>
-              </div>
             </section>
 
             <section aria-labelledby="localizacao" className="mt-10 border-t border-line pt-8">

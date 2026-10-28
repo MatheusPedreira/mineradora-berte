@@ -1,17 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { company } from "@/content/company";
 import { quoteHref } from "@/content/navigation";
-import { track, type ContactLine } from "@/lib/analytics";
-
-const digits = (v: string) => v.replace(/\D/g, "");
-
-/** Identifica o número da empresa apenas pela função (principal/secundário). */
-function contactLine(number: string): ContactLine {
-  const n = digits(number);
-  return n === company.whatsapp.secondary.number || n === digits(company.phoneSecondary.href) ? "secundario" : "principal";
-}
+import { track } from "@/lib/analytics";
 
 /**
  * Registra cliques em telefone, WhatsApp e orçamento de material em qualquer página
@@ -29,9 +20,9 @@ export function ConversionTracking() {
         page_path: window.location.pathname,
       };
       if (href.startsWith("tel:")) {
-        track("phone_click", { contact_type: contactLine(href), ...base });
+        track("phone_click", { contact_type: "principal", ...base });
       } else if (/^https:\/\/wa\.me\/\d+/.test(href)) {
-        track("whatsapp_click", { contact_type: contactLine(href.match(/^https:\/\/wa\.me\/(\d+)/)![1]), ...base });
+        track("whatsapp_click", { contact_type: "principal", ...base });
       } else if (href.startsWith(`${quoteHref}?produto=`)) {
         const slug = new URLSearchParams(href.split("?")[1]).get("produto") ?? "";
         track("product_quote_click", { product: slug, ...base });

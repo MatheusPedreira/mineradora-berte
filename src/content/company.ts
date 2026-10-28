@@ -9,28 +9,19 @@ export const company = {
   shortName: "Berté",
   tagline: "Areia, brita e agregados em Ponte Serrada, SC",
 
+  /** Número único de telefone e WhatsApp (definido pelo cliente em 28/10/2026). */
   phone: {
-    display: "(49) 98409-3337",
-    href: "tel:+5549984093337",
-    e164: "+55-49-98409-3337",
-  },
-
-  /** Segundo telefone comercial (confirmado pelo cliente em 15/10/2026). */
-  phoneSecondary: {
     display: "(49) 99180-1200",
     href: "tel:+5549991801200",
     e164: "+55-49-99180-1200",
   },
 
   /**
-   * WhatsApp comercial (os dois números confirmados pelo cliente em 15/10/2026).
-   * `primary` recebe o formulário de orçamento e os botões "Falar no WhatsApp";
-   * `secondary` aparece apenas como contato alternativo (/contato e rodapé).
+   * WhatsApp comercial: recebe o formulário de orçamento e os botões "Falar no WhatsApp".
    * `number`: formato internacional, só dígitos, usado no link wa.me.
    */
   whatsapp: {
-    primary: { display: "(49) 98409-3337", number: "5549984093337" },
-    secondary: { display: "(49) 99180-1200", number: "5549991801200" },
+    primary: { display: "(49) 99180-1200", number: "5549991801200" },
     directMessage:
       "Olá! Vim pelo site da Mineradora Berté e gostaria de consultar um orçamento de materiais para construção.",
   },
