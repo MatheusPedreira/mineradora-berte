@@ -207,7 +207,10 @@ export const products: Product[] = [
     category: "rachoes",
     summary:
       "Rachãozinho primário vendido por tonelada ou m³, com entrega na obra ou retirada na mineradora em Ponte Serrada (SC).",
-    about: null,
+    about: [
+      "Rachãozinho é o nome comercial de um rachão de pedras menores, obtido na britagem primária, a primeira etapa de fragmentação da rocha na pedreira.",
+      "Como os demais rachões, é uma pedra de mão de formato irregular, usada em geral em bases, aterros, drenagens e muros de contenção.",
+    ],
   }),
   product({
     slug: "rachao-mina",
@@ -220,7 +223,10 @@ export const products: Product[] = [
     category: "rachoes",
     summary:
       "Rachão mina da Mineradora Berté, comercializado por tonelada ou m³, com entrega em frota própria ou retirada em Ponte Serrada (SC).",
-    about: null,
+    about: [
+      "Rachão mina é a designação dada ao rachão que sai diretamente da frente de lavra, após o desmonte da rocha, sem passar pela separação em frações.",
+      "O rachão é uma pedra de grandes dimensões e formato irregular, usada em geral em bases de estradas, aterros, gabiões e muros de arrimo.",
+    ],
   }),
   product({
     slug: "rachao-mataco",
@@ -228,7 +234,10 @@ export const products: Product[] = [
     category: "rachoes",
     summary:
       "Rachão mataco vendido por tonelada ou metro cúbico, com entrega na obra ou retirada na Mineradora Berté, em Ponte Serrada (SC).",
-    about: null,
+    about: [
+      "Mataco é a forma regional de matacão, termo usado para blocos de rocha de grandes dimensões. No catálogo, o rachão mataco reúne as pedras maiores obtidas no desmonte.",
+      "Pedras desse porte costumam ser usadas em enrocamentos, contenções, proteção de margens e aterros.",
+    ],
   }),
 ];
 
