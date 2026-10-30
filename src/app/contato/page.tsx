@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { QuoteForm } from "@/components/quote/QuoteForm";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { company } from "@/content/company";
 import { getProduct } from "@/content/products";
@@ -98,6 +99,26 @@ export default function ContactPage({ searchParams }: PageProps<"/contato">) {
           </div>
         </aside>
       </Container>
+
+      <section aria-labelledby="como-chegar" className="border-t border-line">
+        <Container className="py-12 sm:py-16 lg:py-24">
+          <Eyebrow>Localização</Eyebrow>
+          <h2
+            id="como-chegar"
+            className="mt-6 text-[2.1rem] leading-[1.02] font-bold tracking-[-0.03em] text-graphite sm:text-5xl"
+          >
+            Como chegar à mineradora.
+          </h2>
+          <iframe
+            src={company.mapsEmbedUrl}
+            title={`Mapa da ${company.name} em ${company.address.city} (${company.address.state})`}
+            className="mt-10 aspect-[4/3] w-full border-0 bg-line sm:aspect-[16/9] lg:aspect-[21/9]"
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </Container>
+      </section>
     </>
   );
 }

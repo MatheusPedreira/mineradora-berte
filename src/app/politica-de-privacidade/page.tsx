@@ -154,7 +154,8 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-bold tracking-[-0.02em] text-graphite">Links externos</h2>
             <p className="mt-3">
               O site contém links para serviços de terceiros, como o WhatsApp e o Google Maps, que possuem políticas de
-              privacidade próprias.
+              privacidade próprias. A página de contato exibe um mapa incorporado do Google Maps, carregado diretamente
+              pelo Google.
             </p>
           </section>
           <section>
